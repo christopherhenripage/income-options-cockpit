@@ -1,0 +1,23 @@
+{
+  "name": "income-options-cockpit",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @cockpit/web dev",
+    "build": "pnpm --filter @cockpit/web build",
+    "start": "pnpm --filter @cockpit/web start",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:watch": "pnpm -r test:watch",
+    "db:migrate": "cd supabase && supabase db push",
+    "db:seed": "pnpm --filter @cockpit/web seed",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
