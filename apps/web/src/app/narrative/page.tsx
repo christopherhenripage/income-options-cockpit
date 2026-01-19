@@ -42,7 +42,7 @@ const previousNarratives = [
 
 const mockComments = [
   { author: 'You', text: 'Good setup for CSPs this week', date: '2024-01-15 09:30' },
-  { author: 'Father-in-law', text: 'Agree, watching AAPL for entry', date: '2024-01-15 10:15' },
+  { author: 'Mike T.', text: 'Agree, watching AAPL for entry', date: '2024-01-15 10:15' },
 ];
 
 export default function NarrativePage() {

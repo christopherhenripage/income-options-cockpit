@@ -71,8 +71,8 @@ const mockMembers: WorkspaceMember[] = [
   },
   {
     id: '2',
-    email: 'fatherinlaw@example.com',
-    name: 'Father-in-law',
+    email: 'mike.t@example.com',
+    name: 'Mike T.',
     role: 'member',
     joinedAt: '2024-01-05T00:00:00Z',
     lastActive: '2024-01-15T10:00:00Z',
@@ -216,7 +216,7 @@ export default function WorkspaceMembersPage() {
                   Workspace Collaboration
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Share your workspace with family members or trusted partners to
+                  Share your workspace with team members or trusted partners to
                   collaborate on trade ideas. Members can view trade recommendations,
                   add comments, and share insights. Each member has their own login
                   but shares the same workspace data.

@@ -325,7 +325,7 @@ export const mockComments: Comment[] = [
         updatedAt: '2024-01-15T15:00:00Z',
         user: {
           id: 'user-2',
-          displayName: 'Father-in-law',
+          displayName: 'Mike T.',
           avatarUrl: null,
         },
       },
@@ -338,7 +338,7 @@ export const mockComments: Comment[] = [
     updatedAt: '2024-01-15T16:00:00Z',
     user: {
       id: 'user-2',
-      displayName: 'Father-in-law',
+      displayName: 'Mike T.',
       avatarUrl: null,
     },
   },

@@ -22,7 +22,7 @@ A production-quality web application for generating income-focused options trade
 - **Learning Mode**: Educational tooltips and explanations
 - **Experienced Trader Mode**: Raw Greeks and advanced metrics
 - **Paper Trading**: Simulated fills and position tracking
-- **Collaboration**: Invite family members, share workspace, comment on trades
+- **Collaboration**: Invite team members, share workspace, comment on trades
 - **Safe Broker Integration**: Manual guidance, paper mode, or broker API with approval gates
 
 ## Tech Stack
@@ -159,7 +159,7 @@ Cron jobs are configured in `vercel.json` to run recompute at:
 - 8:30 AM CT (13:30 UTC)
 - 12:30 PM CT (17:30 UTC)
 
-## Inviting Collaborators (Father-in-Law)
+## Inviting Collaborators
 
 1. Log into the app with your account
 2. Go to Settings
