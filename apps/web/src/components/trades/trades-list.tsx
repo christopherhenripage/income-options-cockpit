@@ -21,6 +21,10 @@ import {
   Eye,
   CheckCircle,
   Clock,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react';
 import {
   cn,
@@ -120,10 +124,14 @@ const mockTrades = [
   },
 ];
 
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
+
 export function TradesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [strategyFilter, setStrategyFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const filteredTrades = mockTrades.filter((trade) => {
     const matchesSearch =
@@ -134,6 +142,26 @@ export function TradesList() {
       statusFilter === 'all' || trade.status === statusFilter;
     return matchesSearch && matchesStrategy && matchesStatus;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredTrades.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTrades = filteredTrades.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (
+    setter: (value: string) => void,
+    value: string
+  ) => {
+    setter(value);
+    setCurrentPage(1);
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -174,12 +202,15 @@ export function TradesList() {
               <Input
                 placeholder="Search symbol..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="pl-9 w-40"
               />
             </div>
 
-            <Select value={strategyFilter} onValueChange={setStrategyFilter}>
+            <Select value={strategyFilter} onValueChange={(v) => handleFilterChange(setStrategyFilter, v)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Strategy" />
               </SelectTrigger>
@@ -192,7 +223,7 @@ export function TradesList() {
               </SelectContent>
             </Select>
 
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={(v) => handleFilterChange(setStatusFilter, v)}>
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -225,7 +256,7 @@ export function TradesList() {
               </tr>
             </thead>
             <tbody>
-              {filteredTrades.map((trade) => (
+              {paginatedTrades.map((trade) => (
                 <tr key={trade.id} className="group">
                   <td>
                     <span className="font-semibold">{trade.symbol}</span>
@@ -289,6 +320,77 @@ export function TradesList() {
         {filteredTrades.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             No trades match your filters
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {filteredTrades.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Showing</span>
+              <Select
+                value={String(itemsPerPage)}
+                onValueChange={handleItemsPerPageChange}
+              >
+                <SelectTrigger className="h-8 w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={String(option)}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span>
+                of {filteredTrades.length} trade{filteredTrades.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-1 px-2">
+                <span className="text-sm">
+                  Page {currentPage} of {totalPages || 1}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage >= totalPages}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>

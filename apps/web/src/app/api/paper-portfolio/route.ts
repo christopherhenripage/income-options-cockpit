@@ -1,6 +1,48 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { logger, logApiError } from '@/lib/logger';
+
+/**
+ * Calculate estimated unrealized P&L for an open position
+ * Uses time decay approximation since we don't have real-time option prices
+ *
+ * For credit positions (CSP, credit spreads):
+ * - Max profit = credit received (option expires worthless)
+ * - P&L increases as time passes due to theta decay
+ * - Time decay accelerates near expiration (square root approximation)
+ */
+function calculateUnrealizedPnL(position: {
+  credit_received: number;
+  entry_date: string;
+  expiration_date: string;
+  strategy_type: string;
+}): number {
+  const now = new Date();
+  const entryDate = new Date(position.entry_date);
+  const expirationDate = new Date(position.expiration_date);
+
+  // Calculate time values
+  const totalDays = Math.max(1, (expirationDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysElapsed = Math.max(0, (now.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysRemaining = Math.max(0, (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  // If expired, return full credit (assuming OTM expiration for paper trades)
+  if (daysRemaining <= 0) {
+    return position.credit_received;
+  }
+
+  // Time decay approximation using square root formula
+  // Options lose value faster as expiration approaches
+  // At entry: 0% profit, at expiration: 100% profit (if OTM)
+  const timeDecayFactor = 1 - Math.sqrt(daysRemaining / totalDays);
+
+  // Apply time decay to credit received
+  // Multiply by 0.85 to be conservative (real positions may not achieve full profit)
+  const estimatedPnL = position.credit_received * timeDecayFactor * 0.85;
+
+  return Math.round(estimatedPnL * 100) / 100;
+}
 
 // Schema for opening a paper position
 const openPositionSchema = z.object({
@@ -83,7 +125,7 @@ export async function POST(request: Request) {
       .single();
 
     if (positionError) {
-      console.error('Failed to create paper position:', positionError);
+      logger.error('Failed to create paper position', { error: positionError });
       return NextResponse.json(
         { error: 'Failed to create position' },
         { status: 500 }
@@ -101,7 +143,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, position });
   } catch (error) {
-    console.error('Open position error:', error);
+    logApiError('/api/paper-portfolio', error, { operation: 'open' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -155,7 +197,7 @@ export async function GET(request: Request) {
     );
 
     if (positionsError) {
-      console.error('Failed to fetch positions:', positionsError);
+      logger.error('Failed to fetch positions', { error: positionsError });
       return NextResponse.json(
         { error: 'Failed to fetch positions' },
         { status: 500 }
@@ -167,8 +209,14 @@ export async function GET(request: Request) {
     const closedPositions = positions?.filter((p) => p.status === 'closed') || [];
 
     const totalOpenPnL = openPositions.reduce((sum, p) => {
-      // Mock current P/L calculation - in reality would need current prices
-      return sum + (p.credit_received * 0.3); // Assume 30% profit for mock
+      // Calculate estimated P&L based on time decay
+      const pnl = calculateUnrealizedPnL({
+        credit_received: p.credit_received || 0,
+        entry_date: p.entry_date || p.created_at,
+        expiration_date: p.expiration_date,
+        strategy_type: p.strategy_type,
+      });
+      return sum + pnl;
     }, 0);
 
     const totalRealizedPnL = closedPositions.reduce((sum, p) => {
@@ -186,7 +234,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Get positions error:', error);
+    logApiError('/api/paper-portfolio', error, { operation: 'get' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -261,7 +309,7 @@ export async function PATCH(request: Request) {
       .single();
 
     if (updateError) {
-      console.error('Failed to close position:', updateError);
+      logger.error('Failed to close position', { error: updateError });
       return NextResponse.json(
         { error: 'Failed to close position' },
         { status: 500 }
@@ -280,7 +328,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, position: updatedPosition });
   } catch (error) {
-    console.error('Close position error:', error);
+    logApiError('/api/paper-portfolio', error, { operation: 'close' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

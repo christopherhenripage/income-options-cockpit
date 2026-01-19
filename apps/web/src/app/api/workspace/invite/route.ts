@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { logger, logApiError } from '@/lib/logger';
 
 const inviteSchema = z.object({
   email: z.string().email(),
@@ -131,7 +132,7 @@ export async function POST(request: Request) {
       .single();
 
     if (inviteError) {
-      console.error('Failed to create invite:', inviteError);
+      logger.error('Failed to create invite', { error: inviteError });
       return NextResponse.json(
         { error: 'Failed to create invite' },
         { status: 500 }
@@ -152,7 +153,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Invite error:', error);
+    logApiError('/api/workspace/invite', error, { operation: 'create' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -205,7 +206,7 @@ export async function GET() {
       .order('created_at', { ascending: false });
 
     if (invitesError) {
-      console.error('Failed to fetch invites:', invitesError);
+      logger.error('Failed to fetch invites', { error: invitesError });
       return NextResponse.json(
         { error: 'Failed to fetch invites' },
         { status: 500 }
@@ -214,7 +215,7 @@ export async function GET() {
 
     return NextResponse.json({ invites });
   } catch (error) {
-    console.error('Get invites error:', error);
+    logApiError('/api/workspace/invite', error, { operation: 'get' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -255,7 +256,7 @@ export async function DELETE(request: Request) {
       .eq('id', inviteId);
 
     if (updateError) {
-      console.error('Failed to cancel invite:', updateError);
+      logger.error('Failed to cancel invite', { error: updateError });
       return NextResponse.json(
         { error: 'Failed to cancel invite' },
         { status: 500 }
@@ -264,7 +265,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Cancel invite error:', error);
+    logApiError('/api/workspace/invite', error, { operation: 'cancel' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

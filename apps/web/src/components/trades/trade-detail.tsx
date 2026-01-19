@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -137,8 +137,8 @@ export function TradeDetail({ tradeId }: TradeDetailProps) {
   const [daysElapsed, setDaysElapsed] = useState([0]);
   const [showApproveDialog, setShowApproveDialog] = useState(false);
 
-  // Calculate what-if P/L (simplified model)
-  const calculateWhatIfPL = () => {
+  // Memoized what-if P/L calculation (simplified model)
+  const whatIfPL = useMemo(() => {
     const pricePct = priceChange[0] / 100;
     const newPrice = mockTrade.underlyingPrice * (1 + pricePct);
     const daysLeft = Math.max(0, mockTrade.dte - daysElapsed[0]);
@@ -161,9 +161,7 @@ export function TradeDetail({ tradeId }: TradeDetailProps) {
     }
 
     return pl;
-  };
-
-  const whatIfPL = calculateWhatIfPL();
+  }, [priceChange, daysElapsed]);
 
   return (
     <div className="space-y-6">

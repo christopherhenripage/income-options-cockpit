@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { logger, logApiError } from '@/lib/logger';
 
 const createCommentSchema = z.object({
   tradePacketId: z.string().uuid(),
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
       .single();
 
     if (commentError) {
-      console.error('Failed to create comment:', commentError);
+      logger.error('Failed to create comment', { error: commentError });
       return NextResponse.json(
         { error: 'Failed to create comment' },
         { status: 500 }
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
       comment,
     });
   } catch (error) {
-    console.error('Create comment error:', error);
+    logApiError('/api/comments', error, { operation: 'create' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -155,7 +156,7 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: true });
 
     if (commentsError) {
-      console.error('Failed to fetch comments:', commentsError);
+      logger.error('Failed to fetch comments', { error: commentsError });
       return NextResponse.json(
         { error: 'Failed to fetch comments' },
         { status: 500 }
@@ -173,7 +174,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ comments: threaded });
   } catch (error) {
-    console.error('Get comments error:', error);
+    logApiError('/api/comments', error, { operation: 'get' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -230,7 +231,7 @@ export async function PATCH(request: Request) {
       .single();
 
     if (updateError) {
-      console.error('Failed to update comment:', updateError);
+      logger.error('Failed to update comment', { error: updateError });
       return NextResponse.json(
         { error: 'Failed to update comment' },
         { status: 500 }
@@ -239,7 +240,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, comment });
   } catch (error) {
-    console.error('Update comment error:', error);
+    logApiError('/api/comments', error, { operation: 'update' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -311,7 +312,7 @@ export async function DELETE(request: Request) {
       .eq('id', commentId);
 
     if (deleteError) {
-      console.error('Failed to delete comment:', deleteError);
+      logger.error('Failed to delete comment', { error: deleteError });
       return NextResponse.json(
         { error: 'Failed to delete comment' },
         { status: 500 }
@@ -320,7 +321,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Delete comment error:', error);
+    logApiError('/api/comments', error, { operation: 'delete' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

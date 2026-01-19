@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { logger, logApiError } from '@/lib/logger';
 
 // Badge types and their descriptions
 const BADGE_TYPES = {
@@ -86,7 +88,7 @@ export async function GET() {
       .order('updated_at', { ascending: false });
 
     if (badgesError) {
-      console.error('Failed to fetch badges:', badgesError);
+      logger.error('Failed to fetch badges', { error: badgesError });
       return NextResponse.json(
         { error: 'Failed to fetch badges' },
         { status: 500 }
@@ -127,7 +129,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Get badges error:', error);
+    logApiError('/api/badges', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -195,7 +197,7 @@ export async function POST(request: Request) {
       updatedBadge,
     });
   } catch (error) {
-    console.error('Calculate badge error:', error);
+    logApiError('/api/badges', error, { operation: 'calculate' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -204,7 +206,7 @@ export async function POST(request: Request) {
 }
 
 async function calculateProfitableTrades(
-  supabase: any,
+  supabase: SupabaseClient,
   userId: string,
   workspaceId: string
 ) {
@@ -271,7 +273,7 @@ async function calculateProfitableTrades(
 }
 
 async function calculatePaperTradingMaster(
-  supabase: any,
+  supabase: SupabaseClient,
   userId: string,
   workspaceId: string
 ) {

@@ -27,17 +27,19 @@ import {
  * All methods throw errors indicating they are not implemented.
  */
 
+export interface SchwabTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
 export interface SchwabConfig {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
   accountId?: string;
-}
-
-interface SchwabTokens {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: Date;
+  // Callback when tokens are refreshed - use to persist new tokens
+  onTokenRefresh?: (tokens: SchwabTokens) => void;
 }
 
 export class SchwabBrokerProvider implements BrokerProvider {
@@ -105,7 +107,7 @@ export class SchwabBrokerProvider implements BrokerProvider {
     }
 
     // Check token expiration
-    if (new Date() >= this.tokens.expiresAt) {
+    if (Date.now() >= this.tokens.expiresAt) {
       await this.refreshTokens();
     }
 
@@ -269,10 +271,54 @@ export class SchwabBrokerProvider implements BrokerProvider {
     // POST to Schwab's token endpoint with refresh_token
     // Update stored tokens
 
-    throw new Error(
-      'SchwabBrokerProvider.refreshTokens is not implemented. ' +
-        'This is a scaffold for the Schwab API integration.'
-    );
+    if (!this.tokens?.refreshToken) {
+      throw new Error('No refresh token available. Re-authentication required.');
+    }
+
+    const tokenEndpoint = 'https://api.schwabapi.com/v1/oauth/token';
+
+    try {
+      const response = await fetch(tokenEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${Buffer.from(
+            `${this.config.clientId}:${this.config.clientSecret}`
+          ).toString('base64')}`,
+        },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: this.tokens.refreshToken,
+        }).toString(),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Token refresh failed: ${response.status} - ${error}`);
+      }
+
+      const data = await response.json();
+
+      // Update stored tokens
+      this.tokens = {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token || this.tokens.refreshToken,
+        expiresAt: Date.now() + data.expires_in * 1000,
+      };
+
+      // Call the callback if provided
+      if (this.config.onTokenRefresh) {
+        this.config.onTokenRefresh(this.tokens);
+      }
+    } catch (error) {
+      // If refresh fails, disconnect and require re-auth
+      this.connected = false;
+      this.tokens = null;
+      throw new Error(
+        `Token refresh failed: ${error instanceof Error ? error.message : 'Unknown error'}. ` +
+          'Please reconnect to Schwab.'
+      );
+    }
   }
 
   private isValidOccSymbol(symbol: string): boolean {

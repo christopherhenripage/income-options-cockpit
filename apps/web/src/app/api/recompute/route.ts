@@ -5,22 +5,40 @@ import {
   DEFAULT_SYMBOLS,
   getDefaultSettings,
 } from '@cockpit/engine';
+import { logger, logApiError, logApiRequest } from '@/lib/logger';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { timingSafeEqual } from '@/lib/validation';
 
-// Verify cron secret for scheduled calls
+// Verify cron secret for scheduled calls using timing-safe comparison
 function verifyCronSecret(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret) return true; // Allow if no secret configured (dev mode)
 
-  return authHeader === `Bearer ${cronSecret}`;
+  const expected = `Bearer ${cronSecret}`;
+  if (!authHeader) return false;
+
+  return timingSafeEqual(authHeader, expected);
 }
 
 export async function POST(request: NextRequest) {
+  logApiRequest('/api/recompute', 'POST');
+
   try {
+    // Rate limiting - allow 10 requests per minute
+    const rateLimitResult = checkRateLimit(request, { limit: 10, windowMs: 60000 });
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: rateLimitResult.headers }
+      );
+    }
+
     // For cron calls, verify secret
     const isCronCall = request.headers.get('x-vercel-cron') === 'true';
     if (isCronCall && !verifyCronSecret(request)) {
+      logger.warn('Unauthorized cron attempt');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -57,32 +75,40 @@ export async function POST(request: NextRequest) {
       maxPerSymbol: 2,
     });
 
+    logger.info('Recompute completed', {
+      runId: result.runId,
+      candidateCount: result.rankedCandidates.length,
+    });
+
     // In a real app, we'd store results in the database
     // For now, return the results
 
-    return NextResponse.json({
-      success: true,
-      runId: result.runId,
-      stats: result.stats,
-      regime: {
-        trend: result.regime.trend,
-        volatility: result.regime.volatility,
-        riskOnOff: result.regime.riskOnOff,
-        breadth: result.regime.breadth.assessment,
+    return NextResponse.json(
+      {
+        success: true,
+        runId: result.runId,
+        stats: result.stats,
+        regime: {
+          trend: result.regime.trend,
+          volatility: result.regime.volatility,
+          riskOnOff: result.regime.riskOnOff,
+          breadth: result.regime.breadth.assessment,
+        },
+        candidateCount: result.rankedCandidates.length,
+        candidates: result.rankedCandidates.slice(0, 10).map((c) => ({
+          id: c.id,
+          symbol: c.symbol,
+          strategyType: c.strategyType,
+          score: c.score,
+          netCredit: c.netCredit,
+          maxLoss: c.riskBox.maxLoss,
+          dte: c.dte,
+        })),
       },
-      candidateCount: result.rankedCandidates.length,
-      candidates: result.rankedCandidates.slice(0, 10).map((c) => ({
-        id: c.id,
-        symbol: c.symbol,
-        strategyType: c.strategyType,
-        score: c.score,
-        netCredit: c.netCredit,
-        maxLoss: c.riskBox.maxLoss,
-        dte: c.dte,
-      })),
-    });
+      { headers: rateLimitResult.headers }
+    );
   } catch (error) {
-    console.error('Recompute error:', error);
+    logApiError('/api/recompute', error);
     return NextResponse.json(
       {
         success: false,
@@ -94,11 +120,23 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limiting for status endpoint
+  const rateLimitResult = checkRateLimit(request, { limit: 60, windowMs: 60000 });
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: rateLimitResult.headers }
+    );
+  }
+
   // Simple health check / status endpoint
-  return NextResponse.json({
-    status: 'ok',
-    provider: process.env.MARKET_DATA_PROVIDER || 'mock',
-    tradingEnabled: process.env.TRADING_ENABLED === 'true',
-    brokerExecutionEnabled: process.env.BROKER_EXECUTION_ENABLED === 'true',
-  });
+  return NextResponse.json(
+    {
+      status: 'ok',
+      provider: process.env.MARKET_DATA_PROVIDER || 'mock',
+      tradingEnabled: process.env.TRADING_ENABLED === 'true',
+      brokerExecutionEnabled: process.env.BROKER_EXECUTION_ENABLED === 'true',
+    },
+    { headers: rateLimitResult.headers }
+  );
 }

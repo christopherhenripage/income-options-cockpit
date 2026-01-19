@@ -1,6 +1,12 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { logger, logApiError } from '@/lib/logger';
+
+interface JournalEntry {
+  created_at: string;
+}
 
 const journalEntrySchema = z.object({
   title: z.string().min(1).max(200),
@@ -63,7 +69,7 @@ export async function POST(request: Request) {
       .single();
 
     if (entryError) {
-      console.error('Failed to create journal entry:', entryError);
+      logger.error('Failed to create journal entry', { error: entryError });
       return NextResponse.json(
         { error: 'Failed to create entry' },
         { status: 500 }
@@ -75,7 +81,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, entry });
   } catch (error) {
-    console.error('Create journal entry error:', error);
+    logApiError('/api/journal', error, { operation: 'create' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -126,7 +132,7 @@ export async function GET(request: Request) {
     const { data: entries, error: entriesError, count } = await query;
 
     if (entriesError) {
-      console.error('Failed to fetch journal entries:', entriesError);
+      logger.error('Failed to fetch journal entries', { error: entriesError });
       return NextResponse.json(
         { error: 'Failed to fetch entries' },
         { status: 500 }
@@ -143,7 +149,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Get journal entries error:', error);
+    logApiError('/api/journal', error, { operation: 'get' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -197,7 +203,7 @@ export async function PATCH(request: Request) {
       .single();
 
     if (updateError) {
-      console.error('Failed to update journal entry:', updateError);
+      logger.error('Failed to update journal entry', { error: updateError });
       return NextResponse.json(
         { error: 'Failed to update entry' },
         { status: 500 }
@@ -206,7 +212,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, entry });
   } catch (error) {
-    console.error('Update journal entry error:', error);
+    logApiError('/api/journal', error, { operation: 'update' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -254,7 +260,7 @@ export async function DELETE(request: Request) {
       .eq('id', entryId);
 
     if (deleteError) {
-      console.error('Failed to delete journal entry:', deleteError);
+      logger.error('Failed to delete journal entry', { error: deleteError });
       return NextResponse.json(
         { error: 'Failed to delete entry' },
         { status: 500 }
@@ -263,7 +269,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Delete journal entry error:', error);
+    logApiError('/api/journal', error, { operation: 'delete' });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -273,7 +279,7 @@ export async function DELETE(request: Request) {
 
 // Helper function to update journaling streak
 async function updateJournalingStreak(
-  supabase: any,
+  supabase: SupabaseClient,
   userId: string,
   workspaceId: string
 ) {
@@ -293,7 +299,7 @@ async function updateJournalingStreak(
 
   // Count unique days with entries
   const uniqueDays = new Set(
-    recentEntries.map((e: any) =>
+    (recentEntries as JournalEntry[]).map((e) =>
       new Date(e.created_at).toISOString().split('T')[0]
     )
   );

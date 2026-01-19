@@ -15,35 +15,61 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency, formatPercent, formatDate, getStrategyLabel, getStrategyClass } from '@/lib/utils';
 
-// Mock positions data
-const mockPositions = [
+/**
+ * Calculate estimated unrealized P&L using time decay approximation
+ * Uses square root decay model (options lose value faster near expiration)
+ */
+function calculateUnrealizedPnL(entryCredit: number, openedAt: string, expiration: string): number {
+  const now = new Date();
+  const entryDate = new Date(openedAt);
+  const expirationDate = new Date(expiration);
+
+  const totalDays = Math.max(1, (expirationDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysRemaining = Math.max(0, (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (daysRemaining <= 0) return entryCredit;
+
+  const timeDecayFactor = 1 - Math.sqrt(daysRemaining / totalDays);
+  return Math.round(entryCredit * timeDecayFactor * 0.85);
+}
+
+function calculateDTE(expiration: string): number {
+  const now = new Date();
+  const expirationDate = new Date(expiration);
+  return Math.max(0, Math.round((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+// Mock positions data - P&L calculated dynamically
+const mockPositionsRaw = [
   {
     id: '1',
     symbol: 'AAPL',
     strategyType: 'cash_secured_put',
     status: 'open',
-    openedAt: '2024-01-10',
+    openedAt: '2024-12-20',
     strike: 235,
-    expiration: '2024-02-16',
+    expiration: '2025-02-21',
     entryCredit: 215,
-    currentValue: 145,
-    currentPnL: 70,
-    dte: 32,
   },
   {
     id: '2',
     symbol: 'SPY',
     strategyType: 'put_credit_spread',
     status: 'open',
-    openedAt: '2024-01-08',
+    openedAt: '2024-12-15',
     strike: 575,
-    expiration: '2024-02-09',
+    expiration: '2025-02-14',
     entryCredit: 145,
-    currentValue: 85,
-    currentPnL: 60,
-    dte: 25,
   },
 ];
+
+// Add calculated P&L and DTE to positions
+const mockPositions = mockPositionsRaw.map(p => {
+  const currentPnL = calculateUnrealizedPnL(p.entryCredit, p.openedAt, p.expiration);
+  const currentValue = p.entryCredit - currentPnL;
+  const dte = calculateDTE(p.expiration);
+  return { ...p, currentPnL, currentValue, dte };
+});
 
 const mockClosedPositions = [
   {

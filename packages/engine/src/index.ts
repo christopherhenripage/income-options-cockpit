@@ -41,6 +41,17 @@ export {
 // Utils
 export * from './utils';
 
+// Cache
+export {
+  Cache,
+  memoize,
+  memoizeAsync,
+  symbolSignalsCache,
+  marketRegimeCache,
+  optionChainCache,
+  quoteCache,
+} from './cache';
+
 // Brokers
 export {
   // Types
