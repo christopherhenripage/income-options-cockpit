@@ -50,26 +50,10 @@ export async function POST(request: NextRequest) {
 
     // Initialize provider based on environment
     const providerType = process.env.MARKET_DATA_PROVIDER || 'mock';
-    let provider;
-
-    if (providerType === 'polygon') {
-      const apiKey = process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY;
-      if (!apiKey) {
-        logger.warn('Polygon API key not configured, falling back to mock provider');
-        provider = new MockProvider();
-      } else {
-        provider = new PolygonProvider(apiKey);
-        logger.info('Using Polygon provider with real market data');
-      }
-    } else {
-      provider = new MockProvider();
-    }
+    const apiKey = process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY;
 
     // Get settings (in real app, from database)
     const settings = getDefaultSettings('balanced');
-
-    // Create engine and run recompute
-    const engine = new TradingEngine(provider);
 
     // Override settings for paper trading - larger account size for realistic trades
     const paperTradingSettings = {
@@ -81,7 +65,7 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    const result = await engine.recompute(paperTradingSettings, {
+    const recomputeOptions = {
       workspaceId,
       settingsVersionId,
       riskProfilePreset,
@@ -89,7 +73,35 @@ export async function POST(request: NextRequest) {
       minScore: 30,
       topPerStrategy: 5,
       maxPerSymbol: 3,
-    });
+    };
+
+    let result;
+    let usingLiveData = false;
+
+    // Try Polygon first, fall back to mock if it fails (e.g., weekends, API issues)
+    if (providerType === 'polygon' && apiKey) {
+      try {
+        const polygonProvider = new PolygonProvider(apiKey);
+        const engine = new TradingEngine(polygonProvider);
+        logger.info('Attempting to use Polygon provider with real market data');
+        result = await engine.recompute(paperTradingSettings, recomputeOptions);
+        usingLiveData = true;
+        logger.info('Successfully fetched live market data');
+      } catch (polygonError) {
+        logger.warn('Polygon provider failed, falling back to mock data', {
+          error: polygonError instanceof Error ? polygonError.message : 'Unknown error',
+        });
+        // Fall through to mock provider
+      }
+    }
+
+    // Use mock provider if Polygon wasn't configured or failed
+    if (!result) {
+      const mockProvider = new MockProvider();
+      const engine = new TradingEngine(mockProvider);
+      logger.info('Using mock provider');
+      result = await engine.recompute(paperTradingSettings, recomputeOptions);
+    }
 
     logger.info('Recompute completed', {
       runId: result.runId,
@@ -102,6 +114,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
+        liveData: usingLiveData,
         runId: result.runId,
         stats: result.stats,
         regime: {
