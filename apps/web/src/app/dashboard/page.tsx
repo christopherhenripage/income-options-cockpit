@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import { MarketOverview } from '@/components/dashboard/market-overview';
+import { TopPick } from '@/components/dashboard/top-pick';
 import { TopTrades } from '@/components/dashboard/top-trades';
 import { LiquidityRadar } from '@/components/dashboard/liquidity-radar';
 import { NarrativePreview } from '@/components/dashboard/narrative-preview';
@@ -174,6 +175,13 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Today's Top Pick - Featured Recommendation */}
+        <TopPick
+          candidate={data?.candidates?.[0]}
+          regime={data?.regime}
+          loading={loading}
+        />
 
         {/* Top Row - Market Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
