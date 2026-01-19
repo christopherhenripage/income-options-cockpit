@@ -119,6 +119,16 @@ export async function POST(request: NextRequest) {
           netCredit: c.netCredit,
           maxLoss: c.riskBox.maxLoss,
           dte: c.dte,
+          underlyingPrice: c.underlyingPrice,
+          legs: c.legs.map((leg) => ({
+            action: leg.action,
+            quantity: leg.quantity,
+            strike: leg.option.strike,
+            type: leg.option.type,
+            expiration: leg.option.expiration,
+            symbol: leg.option.symbol,
+          })),
+          orderTicketInstructions: c.orderTicketInstructions,
         })),
       },
       { headers: rateLimitResult.headers }

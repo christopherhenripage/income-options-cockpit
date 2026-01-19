@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Trophy,
   TrendingUp,
-  TrendingDown,
   Shield,
   DollarSign,
   Clock,
@@ -15,6 +15,9 @@ import {
   Lightbulb,
   CheckCircle,
   Activity,
+  Copy,
+  Check,
+  FileText,
 } from 'lucide-react';
 import {
   cn,
@@ -25,6 +28,15 @@ import {
   getScoreColor,
 } from '@/lib/utils';
 
+interface OptionLeg {
+  action: 'buy' | 'sell';
+  quantity: number;
+  strike: number;
+  type: 'call' | 'put';
+  expiration: string;
+  symbol: string;
+}
+
 interface TradeCandidate {
   id: string;
   symbol: string;
@@ -33,6 +45,9 @@ interface TradeCandidate {
   netCredit: number;
   maxLoss: number;
   dte: number;
+  underlyingPrice?: number;
+  legs?: OptionLeg[];
+  orderTicketInstructions?: string;
 }
 
 interface Regime {
@@ -127,7 +142,66 @@ function generateRationale(candidate: TradeCandidate, regime: Regime): {
   return { headline, reasons: reasons.slice(0, 4), confidence };
 }
 
+// Format expiration date for display
+function formatExpiration(expiration: string): string {
+  const date = new Date(expiration + 'T00:00:00');
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: '2-digit'
+  });
+}
+
+// Generate Ameritrade-style order instructions
+function formatAmeritradeOrder(candidate: TradeCandidate): {
+  instructions: string[];
+  copyText: string;
+} {
+  if (!candidate.legs || candidate.legs.length === 0) {
+    return {
+      instructions: ['Trade details not available'],
+      copyText: '',
+    };
+  }
+
+  const instructions: string[] = [];
+  const copyLines: string[] = [];
+
+  candidate.legs.forEach((leg, index) => {
+    const action = leg.action === 'sell' ? 'Sell to Open' : 'Buy to Open';
+    const optionType = leg.type === 'put' ? 'Put' : 'Call';
+    const expDate = formatExpiration(leg.expiration);
+    const price = candidate.netCredit / 100; // Convert cents to dollars per contract
+
+    const instruction = `${action} ${leg.quantity} ${candidate.symbol} ${expDate} $${leg.strike} ${optionType}`;
+    instructions.push(instruction);
+    copyLines.push(instruction);
+  });
+
+  // Add credit info
+  const creditPerContract = (candidate.netCredit / 100).toFixed(2);
+  copyLines.push(`\nLimit Price: $${creditPerContract} credit`);
+  copyLines.push(`Max Risk: ${formatCurrency(candidate.maxLoss)}`);
+
+  return {
+    instructions,
+    copyText: copyLines.join('\n'),
+  };
+}
+
 export function TopPick({ candidate, regime, loading }: TopPickProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   if (loading || !candidate || !regime) {
     return (
       <Card className="border-primary/30 bg-gradient-to-r from-primary/5 to-purple-500/5">
@@ -184,9 +258,9 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
         </div>
 
         {/* Main Trade Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Trade Details */}
-          <div className="glass-panel p-5 rounded-xl">
+          <div className="glass-panel p-5 rounded-xl lg:col-span-1">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold">{candidate.symbol}</span>
@@ -248,7 +322,7 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
             </div>
           </div>
 
-          {/* Right: Rationale */}
+          {/* Middle: Rationale */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-primary">
               <Lightbulb className="h-5 w-5" />
@@ -286,6 +360,64 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
                 </Badge>
               </div>
             </div>
+          </div>
+
+          {/* Right: Ameritrade Trade Ticket */}
+          <div className="glass-panel p-5 rounded-xl border-green-500/20 bg-green-500/5">
+            <div className="flex items-center gap-2 text-green-400 mb-4">
+              <FileText className="h-5 w-5" />
+              <span className="font-semibold">Ameritrade Order</span>
+            </div>
+
+            {candidate.legs && candidate.legs.length > 0 ? (
+              <>
+                <div className="space-y-2 mb-4">
+                  {formatAmeritradeOrder(candidate).instructions.map((instruction, i) => (
+                    <div
+                      key={i}
+                      className="bg-background/50 border border-border rounded-lg p-3 font-mono text-sm"
+                    >
+                      {instruction}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between text-sm mb-4 px-1">
+                  <span className="text-muted-foreground">Limit Price:</span>
+                  <span className="text-green-400 font-semibold">
+                    ${(candidate.netCredit / 100).toFixed(2)} credit
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full border-green-500/30 text-green-400 hover:bg-green-500/10"
+                  onClick={() => handleCopy(formatAmeritradeOrder(candidate).copyText)}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy to Clipboard
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  Paste directly into thinkorswim or Ameritrade web
+                </p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground">
+                  {candidate.orderTicketInstructions || 'Order details loading...'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
