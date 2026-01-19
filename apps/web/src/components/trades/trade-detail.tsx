@@ -55,7 +55,7 @@ const mockTrade = {
   breakeven: 232.85,
   dte: 32,
   strike: 235,
-  expiration: '2024-02-16',
+  expiration: '2026-02-20',
   returnOnRisk: 28.5,
   returnOnCapital: 0.91,
   probabilityOfProfit: 72,
@@ -77,7 +77,7 @@ const mockTrade = {
       quantity: 1,
       type: 'put',
       strike: 235,
-      expiration: '2024-02-16',
+      expiration: '2026-02-20',
       bid: 2.10,
       ask: 2.20,
       delta: -0.22,
@@ -112,7 +112,7 @@ const mockTrade = {
   orderTicketInstructions: `## thinkorswim Order Ticket
 
 1. Open Trade Tab → Options Chain
-2. Select AAPL → Feb 16 2024 expiration
+2. Select AAPL → Feb 20 2026 expiration
 3. Find $235 PUT strike
 4. Right-click → Sell → Single
 5. Verify:
@@ -183,7 +183,7 @@ export function TradeDetail({ tradeId }: TradeDetailProps) {
           <p className="text-muted-foreground">
             ${mockTrade.strike} Put • Exp: {mockTrade.expiration} • {mockTrade.dte} DTE
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Generated under {mockTrade.settingsVersion}
           </p>
         </div>
@@ -216,25 +216,25 @@ export function TradeDetail({ tradeId }: TradeDetailProps) {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="glass-panel p-4 rounded-lg text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Max Profit</div>
+                  <div className="text-sm text-muted-foreground mb-1">Max Profit</div>
                   <div className="text-2xl font-bold text-green-400">
                     {formatCurrency(mockTrade.netCredit)}
                   </div>
                 </div>
                 <div className="glass-panel p-4 rounded-lg text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Max Loss</div>
+                  <div className="text-sm text-muted-foreground mb-1">Max Loss</div>
                   <div className="text-2xl font-bold text-red-400">
                     {formatCurrency(mockTrade.maxLoss)}
                   </div>
                 </div>
                 <div className="glass-panel p-4 rounded-lg text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Breakeven</div>
+                  <div className="text-sm text-muted-foreground mb-1">Breakeven</div>
                   <div className="text-2xl font-bold">
                     ${mockTrade.breakeven.toFixed(2)}
                   </div>
                 </div>
                 <div className="glass-panel p-4 rounded-lg text-center">
-                  <div className="text-xs text-muted-foreground mb-1">Ann. Return</div>
+                  <div className="text-sm text-muted-foreground mb-1">Ann. Return</div>
                   <div className="text-2xl font-bold text-primary">
                     {formatPercent(mockTrade.returnOnRisk)}
                   </div>
@@ -297,14 +297,14 @@ export function TradeDetail({ tradeId }: TradeDetailProps) {
                           )}
                           <div>
                             <div className="font-medium">{reason.check}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-sm text-muted-foreground">
                               {reason.category}
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-medium">{reason.value}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-sm text-muted-foreground">
                             {reason.threshold}
                           </div>
                         </div>

@@ -71,9 +71,9 @@ const mockSymbols = [
 ];
 
 const mockVersionHistory = [
-  { version: 12, preset: 'balanced', date: '2024-01-15 10:30', changes: 'Increased DTE range' },
-  { version: 11, preset: 'balanced', date: '2024-01-14 14:22', changes: 'Added NVDA to universe' },
-  { version: 10, preset: 'conservative', date: '2024-01-12 09:15', changes: 'Switched to conservative preset' },
+  { version: 12, preset: 'balanced', date: '2026-01-18 10:30', changes: 'Increased DTE range' },
+  { version: 11, preset: 'balanced', date: '2026-01-17 14:22', changes: 'Added NVDA to universe' },
+  { version: 10, preset: 'conservative', date: '2026-01-15 09:15', changes: 'Switched to conservative preset' },
 ];
 
 export function SettingsPanel() {

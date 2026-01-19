@@ -16,7 +16,7 @@ import { cn, formatDate, getTrendClass, getVolatilityClass } from '@/lib/utils';
 
 // Mock narrative data
 const mockNarrative = {
-  date: '2024-01-15',
+  date: '2026-01-18',
   title: 'Uptrend with Normal Volatility - Risk-On Environment',
   regime: {
     trend: 'uptrend',
@@ -35,14 +35,14 @@ const mockNarrative = {
 };
 
 const previousNarratives = [
-  { date: '2024-01-12', title: 'Consolidation with Rising Volatility', trend: 'neutral', vol: 'elevated' },
-  { date: '2024-01-11', title: 'Uptrend Continues with Low Vol', trend: 'uptrend', vol: 'low' },
-  { date: '2024-01-10', title: 'Strong Rally - Risk On', trend: 'strong_uptrend', vol: 'normal' },
+  { date: '2026-01-17', title: 'Consolidation with Rising Volatility', trend: 'neutral', vol: 'elevated' },
+  { date: '2026-01-16', title: 'Uptrend Continues with Low Vol', trend: 'uptrend', vol: 'low' },
+  { date: '2026-01-15', title: 'Strong Rally - Risk On', trend: 'strong_uptrend', vol: 'normal' },
 ];
 
 const mockComments = [
-  { author: 'You', text: 'Good setup for CSPs this week', date: '2024-01-15 09:30' },
-  { author: 'Mike T.', text: 'Agree, watching AAPL for entry', date: '2024-01-15 10:15' },
+  { author: 'You', text: 'Good setup for CSPs this week', date: '2026-01-18 09:30' },
+  { author: 'Mike T.', text: 'Agree, watching AAPL for entry', date: '2026-01-18 10:15' },
 ];
 
 export default function NarrativePage() {
@@ -98,7 +98,7 @@ export default function NarrativePage() {
                 {/* Regime Boxes */}
                 <div className="grid grid-cols-4 gap-4">
                   <div className="glass-panel p-3 rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground mb-1">Trend</div>
+                    <div className="text-sm text-muted-foreground mb-1">Trend</div>
                     <div className={cn(
                       'text-sm font-semibold capitalize',
                       getTrendClass(mockNarrative.regime.trend)
@@ -107,7 +107,7 @@ export default function NarrativePage() {
                     </div>
                   </div>
                   <div className="glass-panel p-3 rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground mb-1">Volatility</div>
+                    <div className="text-sm text-muted-foreground mb-1">Volatility</div>
                     <div className={cn(
                       'text-sm font-semibold capitalize',
                       getVolatilityClass(mockNarrative.regime.volatility)
@@ -116,7 +116,7 @@ export default function NarrativePage() {
                     </div>
                   </div>
                   <div className="glass-panel p-3 rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground mb-1">Risk</div>
+                    <div className="text-sm text-muted-foreground mb-1">Risk</div>
                     <div className={cn(
                       'text-sm font-semibold capitalize',
                       mockNarrative.regime.riskOnOff === 'risk_on' ? 'text-green-400' : 'text-red-400'
@@ -125,7 +125,7 @@ export default function NarrativePage() {
                     </div>
                   </div>
                   <div className="glass-panel p-3 rounded-lg text-center">
-                    <div className="text-xs text-muted-foreground mb-1">Breadth</div>
+                    <div className="text-sm text-muted-foreground mb-1">Breadth</div>
                     <div className="text-sm font-semibold capitalize text-blue-400">
                       {mockNarrative.regime.breadth.assessment}
                     </div>
@@ -277,7 +277,7 @@ export default function NarrativePage() {
                           </Badge>
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-sm text-muted-foreground truncate">
                         {narrative.title}
                       </p>
                     </div>

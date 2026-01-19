@@ -310,8 +310,8 @@ export const mockComments: Comment[] = [
   {
     id: '1',
     content: 'This looks like a solid setup. The delta targeting at -0.25 gives us good probability of profit.',
-    createdAt: '2024-01-15T14:30:00Z',
-    updatedAt: '2024-01-15T14:30:00Z',
+    createdAt: '2026-01-18T14:30:00Z',
+    updatedAt: '2026-01-18T14:30:00Z',
     user: {
       id: 'user-1',
       displayName: 'You',
@@ -321,8 +321,8 @@ export const mockComments: Comment[] = [
       {
         id: '2',
         content: 'Agreed. I like the technical support level too - it gives us an extra margin of safety.',
-        createdAt: '2024-01-15T15:00:00Z',
-        updatedAt: '2024-01-15T15:00:00Z',
+        createdAt: '2026-01-18T15:00:00Z',
+        updatedAt: '2026-01-18T15:00:00Z',
         user: {
           id: 'user-2',
           displayName: 'Mike T.',
@@ -334,8 +334,8 @@ export const mockComments: Comment[] = [
   {
     id: '3',
     content: 'Watch out for earnings next week - might want to wait or adjust the expiration date.',
-    createdAt: '2024-01-15T16:00:00Z',
-    updatedAt: '2024-01-15T16:00:00Z',
+    createdAt: '2026-01-18T16:00:00Z',
+    updatedAt: '2026-01-18T16:00:00Z',
     user: {
       id: 'user-2',
       displayName: 'Mike T.',

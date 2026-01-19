@@ -53,7 +53,7 @@ export function RiskSummary() {
       <CardContent className="space-y-4">
         {/* Kill Switches */}
         <div className="space-y-2">
-          <div className="text-xs text-muted-foreground uppercase tracking-wide">
+          <div className="text-sm text-muted-foreground uppercase tracking-wide">
             Safety Switches
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -62,12 +62,12 @@ export function RiskSummary() {
               riskData.killSwitches.tradingEnabled ? 'border-green-500/50' : 'border-red-500/50'
             )}>
               <div className={cn(
-                'text-xs font-medium',
+                'text-sm font-medium',
                 riskData.killSwitches.tradingEnabled ? 'text-green-400' : 'text-red-400'
               )}>
                 Trading
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm text-muted-foreground">
                 {riskData.killSwitches.tradingEnabled ? 'ON' : 'OFF'}
               </div>
             </div>
@@ -76,12 +76,12 @@ export function RiskSummary() {
               riskData.killSwitches.brokerExecutionEnabled ? 'border-green-500/50' : 'border-red-500/50'
             )}>
               <div className={cn(
-                'text-xs font-medium',
+                'text-sm font-medium',
                 riskData.killSwitches.brokerExecutionEnabled ? 'text-green-400' : 'text-red-400'
               )}>
                 Broker
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm text-muted-foreground">
                 {riskData.killSwitches.brokerExecutionEnabled ? 'ON' : 'OFF'}
               </div>
             </div>
@@ -90,12 +90,12 @@ export function RiskSummary() {
               riskData.killSwitches.paperModeEnabled ? 'border-green-500/50' : 'border-muted'
             )}>
               <div className={cn(
-                'text-xs font-medium',
+                'text-sm font-medium',
                 riskData.killSwitches.paperModeEnabled ? 'text-green-400' : 'text-muted-foreground'
               )}>
                 Paper
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm text-muted-foreground">
                 {riskData.killSwitches.paperModeEnabled ? 'ON' : 'OFF'}
               </div>
             </div>
@@ -104,7 +104,7 @@ export function RiskSummary() {
 
         {/* Risk Limits */}
         <div className="space-y-3">
-          <div className="text-xs text-muted-foreground uppercase tracking-wide">
+          <div className="text-sm text-muted-foreground uppercase tracking-wide">
             Risk Limits
           </div>
 

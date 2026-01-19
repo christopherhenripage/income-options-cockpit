@@ -2,21 +2,26 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Minus, Activity, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Activity, Loader2 } from 'lucide-react';
 import { cn, getTrendClass, getVolatilityClass } from '@/lib/utils';
+import { InfoTooltip } from '@/components/ui/jargon-tooltip';
 
-// Mock data - in real app, this would come from the engine
-const mockRegime = {
+interface MarketOverviewProps {
+  regime?: {
+    trend: string;
+    volatility: string;
+    riskOnOff: string;
+    breadth: string;
+  };
+  loading?: boolean;
+}
+
+// Default mock data as fallback
+const defaultRegime = {
   trend: 'uptrend',
   volatility: 'normal',
   riskOnOff: 'risk_on',
-  breadth: {
-    assessment: 'healthy',
-    percentAbove50MA: 62,
-  },
-  spyChange: 0.85,
-  qqqChange: 1.12,
-  vixLevel: 16.5,
+  breadth: 'healthy',
 };
 
 const symbols = [
@@ -26,7 +31,9 @@ const symbols = [
   { symbol: 'DIA', price: 428.55, change: 0.45, trend: 'uptrend', vol: 'low' },
 ];
 
-export function MarketOverview() {
+export function MarketOverview({ regime, loading }: MarketOverviewProps) {
+  const displayRegime = regime || defaultRegime;
+
   const getTrendIcon = (trend: string) => {
     if (trend.includes('uptrend')) return TrendingUp;
     if (trend.includes('downtrend')) return TrendingDown;
@@ -39,39 +46,49 @@ export function MarketOverview() {
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" />
           Market Overview
+          {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {/* Regime Summary */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="glass-panel p-4 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">Trend</div>
-            <div className={cn('text-lg font-semibold capitalize', getTrendClass(mockRegime.trend))}>
-              {mockRegime.trend.replace('_', ' ')}
+            <div className="text-sm text-muted-foreground mb-1 flex items-center">
+              Trend
+              <InfoTooltip term="trend" />
+            </div>
+            <div className={cn('text-lg font-semibold capitalize', getTrendClass(displayRegime.trend))}>
+              {displayRegime.trend.replace('_', ' ')}
             </div>
           </div>
           <div className="glass-panel p-4 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">Volatility</div>
-            <div className={cn('text-lg font-semibold capitalize', getVolatilityClass(mockRegime.volatility))}>
-              {mockRegime.volatility}
+            <div className="text-sm text-muted-foreground mb-1 flex items-center">
+              Volatility
+              <InfoTooltip term="volatility" />
+            </div>
+            <div className={cn('text-lg font-semibold capitalize', getVolatilityClass(displayRegime.volatility))}>
+              {displayRegime.volatility}
             </div>
           </div>
           <div className="glass-panel p-4 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">Risk Regime</div>
+            <div className="text-sm text-muted-foreground mb-1 flex items-center">
+              Risk Regime
+              <InfoTooltip term="risk on" />
+            </div>
             <div className={cn(
               'text-lg font-semibold capitalize',
-              mockRegime.riskOnOff === 'risk_on' ? 'text-green-400' : 'text-red-400'
+              displayRegime.riskOnOff === 'risk_on' ? 'text-green-400' : 'text-red-400'
             )}>
-              {mockRegime.riskOnOff.replace('_', ' ')}
+              {displayRegime.riskOnOff.replace('_', ' ')}
             </div>
           </div>
           <div className="glass-panel p-4 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">Breadth</div>
-            <div className="text-lg font-semibold capitalize text-blue-400">
-              {mockRegime.breadth.assessment}
+            <div className="text-sm text-muted-foreground mb-1 flex items-center">
+              Breadth
+              <InfoTooltip term="breadth" />
             </div>
-            <div className="text-xs text-muted-foreground">
-              {mockRegime.breadth.percentAbove50MA}% above 50MA
+            <div className="text-lg font-semibold capitalize text-blue-400">
+              {displayRegime.breadth}
             </div>
           </div>
         </div>
@@ -92,7 +109,7 @@ export function MarketOverview() {
                   <Badge
                     variant="outline"
                     className={cn(
-                      'text-xs',
+                      'text-sm',
                       getTrendClass(item.trend)
                     )}
                   >
@@ -111,7 +128,7 @@ export function MarketOverview() {
                   {isPositive ? '+' : ''}{item.change.toFixed(2)}%
                 </div>
                 <div className={cn(
-                  'text-xs mt-1',
+                  'text-sm mt-1',
                   getVolatilityClass(item.vol)
                 )}>
                   IV: {item.vol}

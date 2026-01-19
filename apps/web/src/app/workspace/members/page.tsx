@@ -66,16 +66,16 @@ const mockMembers: WorkspaceMember[] = [
     email: 'you@example.com',
     name: 'You',
     role: 'owner',
-    joinedAt: '2024-01-01T00:00:00Z',
-    lastActive: '2024-01-15T14:30:00Z',
+    joinedAt: '2026-01-01T00:00:00Z',
+    lastActive: '2026-01-18T14:30:00Z',
   },
   {
     id: '2',
     email: 'mike.t@example.com',
     name: 'Mike T.',
     role: 'member',
-    joinedAt: '2024-01-05T00:00:00Z',
-    lastActive: '2024-01-15T10:00:00Z',
+    joinedAt: '2026-01-05T00:00:00Z',
+    lastActive: '2026-01-18T10:00:00Z',
   },
 ];
 
@@ -85,8 +85,8 @@ const mockInvites: WorkspaceInvite[] = [
     email: 'newuser@example.com',
     role: 'viewer',
     status: 'pending',
-    invitedAt: '2024-01-14T00:00:00Z',
-    expiresAt: '2024-01-21T00:00:00Z',
+    invitedAt: '2026-01-17T00:00:00Z',
+    expiresAt: '2026-01-24T00:00:00Z',
     invitedBy: 'You',
   },
 ];

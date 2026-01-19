@@ -50,7 +50,7 @@ const mockTrades = [
     strike: 235,
     returnOnRisk: 28.5,
     conviction: { confidence: 72, uncertainty: 18 },
-    expiration: '2024-02-16',
+    expiration: '2026-02-20',
   },
   {
     id: '2',
@@ -64,7 +64,7 @@ const mockTrades = [
     strike: 420,
     returnOnRisk: 45.2,
     conviction: { confidence: 68, uncertainty: 22 },
-    expiration: '2024-02-09',
+    expiration: '2026-02-13',
   },
   {
     id: '3',
@@ -78,7 +78,7 @@ const mockTrades = [
     strike: 575,
     returnOnRisk: 21.8,
     conviction: { confidence: 65, uncertainty: 25 },
-    expiration: '2024-02-23',
+    expiration: '2026-02-27',
   },
   {
     id: '4',
@@ -92,7 +92,7 @@ const mockTrades = [
     strike: 150,
     returnOnRisk: 52.3,
     conviction: { confidence: 58, uncertainty: 32 },
-    expiration: '2024-02-02',
+    expiration: '2026-02-06',
   },
   {
     id: '5',
@@ -106,7 +106,7 @@ const mockTrades = [
     strike: 500,
     returnOnRisk: 23.1,
     conviction: { confidence: 60, uncertainty: 28 },
-    expiration: '2024-02-09',
+    expiration: '2026-02-13',
   },
   {
     id: '6',
@@ -120,7 +120,7 @@ const mockTrades = [
     strike: 590,
     returnOnRisk: 38.7,
     conviction: { confidence: 55, uncertainty: 30 },
-    expiration: '2024-02-23',
+    expiration: '2026-02-27',
   },
 ];
 

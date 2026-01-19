@@ -54,20 +54,20 @@ const mockPendingOrders = [
     symbol: 'AAPL',
     type: 'Cash-Secured Put',
     strike: 235,
-    expiration: '2024-02-16',
+    expiration: '2026-02-20',
     credit: 2.15,
     status: 'pending_approval',
-    createdAt: '2024-01-15T14:30:00Z',
+    createdAt: '2026-01-18T14:30:00Z',
   },
   {
     id: '2',
     symbol: 'SPY',
     type: 'Put Credit Spread',
     strike: 575,
-    expiration: '2024-02-09',
+    expiration: '2026-02-13',
     credit: 1.45,
     status: 'pending_approval',
-    createdAt: '2024-01-15T14:25:00Z',
+    createdAt: '2026-01-18T14:25:00Z',
   },
 ];
 
@@ -79,7 +79,7 @@ const mockOrderHistory = [
     strike: 370,
     credit: 1.85,
     status: 'filled',
-    filledAt: '2024-01-10T09:35:22Z',
+    filledAt: '2026-01-10T09:35:22Z',
     fillPrice: 1.82,
   },
   {
@@ -89,7 +89,7 @@ const mockOrderHistory = [
     strike: 480,
     credit: 2.30,
     status: 'cancelled',
-    cancelledAt: '2024-01-08T15:00:00Z',
+    cancelledAt: '2026-01-08T15:00:00Z',
     reason: 'User cancelled',
   },
 ];
