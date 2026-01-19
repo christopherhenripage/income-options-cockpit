@@ -41,20 +41,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  // Check if first visit
-  useEffect(() => {
-    const hasVisited = localStorage.getItem('cockpit-welcomed');
-    if (!hasVisited) {
-      setShowWelcome(true);
-    }
-  }, []);
-
-  const dismissWelcome = () => {
-    localStorage.setItem('cockpit-welcomed', 'true');
-    setShowWelcome(false);
-  };
+  const [showWelcome, setShowWelcome] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
@@ -133,7 +120,7 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="icon"
                 className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-foreground"
-                onClick={dismissWelcome}
+                onClick={() => setShowWelcome(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -162,7 +149,7 @@ export default function DashboardPage() {
                     variant="outline"
                     size="sm"
                     className="mt-4 border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
-                    onClick={dismissWelcome}
+                    onClick={() => setShowWelcome(false)}
                   >
                     Got it
                   </Button>
