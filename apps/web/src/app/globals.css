@@ -40,10 +40,19 @@
   * {
     @apply border-border;
   }
+  html {
+    font-size: 18px; /* Larger base font for readability */
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.7; /* More line spacing for readability */
   }
+  /* Larger text for older readers */
+  h1 { @apply text-4xl sm:text-5xl font-bold leading-tight; }
+  h2 { @apply text-3xl sm:text-4xl font-bold leading-tight; }
+  h3 { @apply text-xl sm:text-2xl font-semibold; }
+  p { @apply text-base sm:text-lg leading-relaxed; }
 }
 
 /* Custom scrollbar for dark theme */
@@ -432,4 +441,59 @@
   .glass-panel {
     @apply backdrop-blur-sm;
   }
+}
+
+/* Professional/Accessible styles */
+.pro-card {
+  @apply bg-card border border-border rounded-xl p-6 sm:p-8;
+  transition: border-color 0.2s ease;
+}
+
+.pro-card:hover {
+  @apply border-primary/40;
+}
+
+.pro-heading {
+  @apply text-foreground font-bold tracking-tight;
+}
+
+.pro-text {
+  @apply text-muted-foreground leading-relaxed;
+}
+
+.pro-text-large {
+  @apply text-lg sm:text-xl text-muted-foreground leading-relaxed;
+}
+
+/* High contrast button for accessibility */
+.pro-button {
+  @apply bg-primary text-primary-foreground font-semibold px-8 py-4 rounded-lg text-lg;
+  @apply hover:bg-primary/90 transition-colors;
+}
+
+.pro-button-outline {
+  @apply border-2 border-primary text-primary font-semibold px-8 py-4 rounded-lg text-lg;
+  @apply hover:bg-primary/10 transition-colors;
+}
+
+/* Simple clean section */
+.pro-section {
+  @apply py-16 sm:py-24;
+}
+
+.pro-section-alt {
+  @apply py-16 sm:py-24 bg-card/50;
+}
+
+/* Feature list with large checkmarks */
+.pro-feature-list li {
+  @apply flex items-start gap-4 py-3;
+}
+
+.pro-feature-list li svg {
+  @apply h-6 w-6 text-green-500 flex-shrink-0 mt-1;
+}
+
+.pro-feature-list li span {
+  @apply text-lg;
 }

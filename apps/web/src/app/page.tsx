@@ -9,136 +9,96 @@ import {
   BookOpen,
   CheckCircle,
   ArrowRight,
-  Zap,
   LineChart,
   PieChart,
   AlertTriangle,
+  DollarSign,
+  Clock,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 const features = [
   {
     icon: LineChart,
-    title: 'Market Regime Detection',
+    title: 'Market Analysis',
     description:
-      'Automatically analyzes market conditions including trend direction, volatility levels, and risk-on/risk-off sentiment to guide strategy selection.',
+      'See current market conditions at a glance - whether the market is trending up or down, and how volatile it is.',
   },
   {
     icon: Target,
-    title: 'Scored Trade Candidates',
+    title: 'Trade Recommendations',
     description:
-      'Generates and ranks potential trades using a multi-factor scoring system that evaluates premium yield, liquidity, IV rank, and trend alignment.',
+      'Get scored trade ideas based on current market conditions. Each trade is ranked so you can focus on the best opportunities.',
   },
   {
     icon: Shield,
-    title: 'Defined Risk Analysis',
+    title: 'Clear Risk Information',
     description:
-      'Every trade shows clear risk parameters: maximum profit, maximum loss, breakeven price, and probability of profit - no surprises.',
+      'Every trade shows exactly how much you could make or lose. No hidden risks or surprises.',
   },
   {
     icon: Brain,
-    title: 'Learning Context',
+    title: 'Educational Explanations',
     description:
-      'Each trade includes educational notes explaining why the strategy was selected and what factors drive its success or failure.',
+      'Learn as you go with plain-English explanations of why each trade was recommended.',
   },
   {
     icon: BarChart3,
-    title: 'What-If Simulator',
+    title: 'Profit Calculator',
     description:
-      'Interactive tool to visualize how your position P&L changes with price movement and time decay before committing.',
+      'See how your trade would perform at different stock prices before you commit.',
   },
   {
     icon: BookOpen,
     title: 'Trade Journal',
     description:
-      'Document your trades, track your discipline, and build a record of your learning journey with integrated journaling.',
+      'Keep notes on your trades to track what works and learn from experience.',
   },
 ];
 
 const strategies = [
   {
     name: 'Cash-Secured Puts',
-    abbrev: 'CSP',
-    description: 'Sell puts on stocks you want to own at lower prices',
-    color: 'text-blue-400 border-blue-500/50',
+    description: 'Get paid to potentially buy stocks you want at a lower price.',
   },
   {
     name: 'Covered Calls',
-    abbrev: 'CC',
-    description: 'Generate income on stocks you already hold',
-    color: 'text-green-400 border-green-500/50',
+    description: 'Earn extra income on stocks you already own.',
   },
   {
-    name: 'Put Credit Spreads',
-    abbrev: 'PCS',
-    description: 'Bullish spreads with capped risk and reward',
-    color: 'text-purple-400 border-purple-500/50',
-  },
-  {
-    name: 'Call Credit Spreads',
-    abbrev: 'CCS',
-    description: 'Bearish spreads for range-bound or declining markets',
-    color: 'text-orange-400 border-orange-500/50',
+    name: 'Credit Spreads',
+    description: 'Generate income with limited, defined risk.',
   },
 ];
 
-const steps = [
-  {
-    number: '01',
-    title: 'Check Market Regime',
-    description:
-      'Start with the dashboard to understand current market conditions - is it trending, volatile, risk-on or risk-off?',
-  },
-  {
-    number: '02',
-    title: 'Browse Trade Candidates',
-    description:
-      'Review scored trades filtered by strategy type. Higher scores indicate better alignment with current conditions.',
-  },
-  {
-    number: '03',
-    title: 'Analyze the Evidence',
-    description:
-      'Dive into individual trades to see pass/fail checks, score breakdown, and the reasoning behind each recommendation.',
-  },
-  {
-    number: '04',
-    title: 'Simulate Outcomes',
-    description:
-      'Use the what-if tool to understand how price changes and time decay affect your potential profit or loss.',
-  },
-  {
-    number: '05',
-    title: 'Paper Trade',
-    description:
-      'Approve trades to your paper portfolio to track performance without risking real money.',
-  },
-  {
-    number: '06',
-    title: 'Journal & Learn',
-    description:
-      'Document your decisions, review outcomes, and build the discipline needed for consistent income generation.',
-  },
+const benefits = [
+  'Real market data updated throughout the day',
+  'Clear explanations in plain English',
+  'Practice with paper trading before using real money',
+  'Maximum loss clearly shown for every trade',
+  'Works on any device - computer, tablet, or phone',
 ];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen animated-gradient-bg">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b border-primary/20 bg-black/30 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-lg bg-primary/20 flex items-center justify-center neon-border">
-                <TrendingUp className="h-5 w-5 text-primary" />
+      <nav className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-primary" />
               </div>
-              <span className="text-xl font-bold gradient-text">Income Options Cockpit</span>
+              <span className="text-xl sm:text-2xl font-bold text-foreground">
+                Options Cockpit
+              </span>
             </div>
             <Link href="/dashboard">
-              <Button variant="neon" size="sm" className="pulse-glow">
-                Enter App
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" className="text-base sm:text-lg px-6 py-3">
+                Open Dashboard
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
@@ -146,37 +106,28 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-[80vh] flex items-center">
-        {/* Animated background orbs */}
-        <div className="glow-orb glow-orb-cyan w-96 h-96 -top-48 -left-48 float" />
-        <div className="glow-orb glow-orb-purple w-80 h-80 top-1/4 -right-40 float" style={{ animationDelay: '2s' }} />
-        <div className="glow-orb glow-orb-green w-64 h-64 bottom-20 left-1/4 float" style={{ animationDelay: '4s' }} />
-
-        <div className="absolute inset-0 hero-grid" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+      <section className="pro-section border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <Badge variant="outline" className="mb-6 text-primary border-primary/50 neon-border fade-in-up">
-              Paper Trading & Learning Platform
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 fade-in-up fade-in-up-delay-1">
-              <span className="gradient-text-purple">Systematic Options Income</span>
-              <span className="block neon-text-intense mt-2">With Defined Risk</span>
+            <h1 className="pro-heading text-4xl sm:text-5xl lg:text-6xl mb-6">
+              Generate Income from Options
+              <span className="block text-primary mt-2">With Confidence</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto fade-in-up fade-in-up-delay-2">
-              Generate consistent income through options selling strategies.
-              The Cockpit analyzes market conditions, scores trade candidates,
-              and helps you learn with every decision.
+            <p className="pro-text-large mb-10 max-w-3xl mx-auto">
+              A straightforward tool for finding options trades that generate income.
+              See real market data, get clear recommendations, and understand every trade
+              before you make it.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up fade-in-up-delay-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/dashboard">
-                <Button size="lg" variant="neon" className="text-lg px-8 neon-glow">
-                  <Zap className="mr-2 h-5 w-5" />
-                  Launch Dashboard
+                <Button size="lg" className="text-lg px-10 py-6 h-auto">
+                  <TrendingUp className="mr-2 h-6 w-6" />
+                  View Dashboard
                 </Button>
               </Link>
               <Link href="#how-it-works">
-                <Button size="lg" variant="outline" className="text-lg px-8 border-primary/50 hover:bg-primary/10">
-                  Learn How It Works
+                <Button size="lg" variant="outline" className="text-lg px-10 py-6 h-auto">
+                  Learn More
                 </Button>
               </Link>
             </div>
@@ -185,239 +136,229 @@ export default function LandingPage() {
       </section>
 
       {/* Demo Notice */}
-      <section className="border-y border-yellow-500/30 bg-yellow-500/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <section className="border-b border-yellow-500/30 bg-yellow-500/5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-start sm:items-center gap-4">
-            <AlertTriangle className="h-6 w-6 text-yellow-400 flex-shrink-0 mt-1 sm:mt-0" />
+            <AlertTriangle className="h-7 w-7 text-yellow-500 flex-shrink-0 mt-1 sm:mt-0" />
             <div>
-              <h3 className="font-semibold text-yellow-400">Demo Mode Active</h3>
-              <p className="text-sm text-muted-foreground">
-                This platform uses simulated market data for demonstration and learning purposes.
-                No real trades are executed. Paper trading positions track hypothetical performance only.
+              <h3 className="font-semibold text-yellow-500 text-lg">Paper Trading Mode</h3>
+              <p className="text-base text-muted-foreground">
+                This platform is for learning and practice. Trades are simulated - no real money is used.
+                Real market data is provided for realistic practice.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What We Do Section */}
+      <section className="pro-section-alt">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="pro-heading text-3xl sm:text-4xl mb-4">
+              What This Tool Does
+            </h2>
+            <p className="pro-text-large max-w-3xl mx-auto">
+              Options Cockpit helps you find and analyze income-generating options trades.
+              It does the research so you can focus on making decisions.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {features.map((feature) => (
+              <div key={feature.title} className="pro-card">
+                <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <feature.icon className="h-7 w-7 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <p className="pro-text">{feature.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Strategies Section */}
-      <section className="py-20 bg-card/30 relative overflow-hidden">
-        <div className="glow-orb glow-orb-purple w-72 h-72 -bottom-36 -right-36 opacity-20" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4 text-primary border-primary/30">
-              Core Strategies
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4 gradient-text">Income-Focused Strategies</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              The Cockpit focuses on four core options selling strategies designed
-              to generate consistent premium income with clearly defined risk parameters.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {strategies.map((strategy, index) => (
-              <div key={strategy.abbrev} className="glow-card p-6 fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                <Badge variant="outline" className={strategy.color + ' mb-3'}>
-                  {strategy.abbrev}
-                </Badge>
-                <h3 className="font-semibold mb-2">{strategy.name}</h3>
-                <p className="text-sm text-muted-foreground">{strategy.description}</p>
+      <section className="pro-section">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="pro-heading text-3xl sm:text-4xl mb-6">
+                Three Proven Strategies
+              </h2>
+              <p className="pro-text-large mb-8">
+                We focus on three income-generating strategies that professional traders
+                have used for decades. Each one has clearly defined risks.
+              </p>
+              <div className="space-y-6">
+                {strategies.map((strategy, index) => (
+                  <div key={strategy.name} className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold">{index + 1}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-1">{strategy.name}</h3>
+                      <p className="pro-text">{strategy.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="glow-orb glow-orb-cyan w-64 h-64 -top-32 -left-32 opacity-20" />
-        <div className="glow-orb glow-orb-green w-48 h-48 bottom-20 right-10 opacity-15" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4 text-primary border-primary/30">
-              Platform Features
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4 gradient-text">Powerful Analysis Tools</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to analyze, select, and learn from options trades
-              in one integrated platform.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div key={feature.title} className="glow-card p-6 group">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 neon-border group-hover:neon-glow transition-all duration-300">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
+            </div>
+            <div className="pro-card">
+              <div className="flex items-center gap-3 mb-6">
+                <Shield className="h-8 w-8 text-green-500" />
+                <h3 className="text-2xl font-semibold">Safety First</h3>
               </div>
-            ))}
+              <p className="pro-text-large mb-6">
+                Every trade shows you:
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <DollarSign className="h-6 w-6 text-green-500" />
+                  <span className="text-lg">Maximum profit possible</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <AlertTriangle className="h-6 w-6 text-red-500" />
+                  <span className="text-lg">Maximum loss possible</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Target className="h-6 w-6 text-blue-500" />
+                  <span className="text-lg">Break-even price</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-purple-500" />
+                  <span className="text-lg">Days until expiration</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-card/30 relative overflow-hidden">
-        <div className="absolute inset-0 hero-grid opacity-50" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 text-primary border-primary/30">
-              Workflow
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4 gradient-text-purple">How It Works</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              A systematic workflow for finding, analyzing, and learning from
-              income-focused options trades.
+      <section id="how-it-works" className="pro-section-alt">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="pro-heading text-3xl sm:text-4xl mb-4">
+              How It Works
+            </h2>
+            <p className="pro-text-large max-w-3xl mx-auto">
+              A simple process to find and evaluate income-generating trades.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {steps.map((step, index) => (
-              <div key={step.number} className="relative group">
-                {/* Connecting line for desktop */}
-                {index < steps.length - 1 && index !== 2 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-px bg-gradient-to-r from-primary/50 to-transparent" />
-                )}
-                <div className="glow-card p-6 h-full relative overflow-hidden">
-                  {/* Animated number background */}
-                  <span className="absolute -top-4 -right-2 text-8xl font-bold text-primary/5 group-hover:text-primary/10 transition-colors duration-300 select-none">
-                    {step.number}
-                  </span>
-                  {/* Step indicator */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="h-10 w-10 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center neon-border">
-                      <span className="text-sm font-bold text-primary">{step.number}</span>
-                    </div>
-                    <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 relative">{step.title}</h3>
-                  <p className="text-muted-foreground text-sm relative">{step.description}</p>
+            {[
+              {
+                step: '1',
+                title: 'Check the Market',
+                description: 'Start with the dashboard to see current market conditions and what strategies work best right now.',
+              },
+              {
+                step: '2',
+                title: 'Review Trade Ideas',
+                description: 'Browse through recommended trades, sorted by score. Higher scores mean better alignment with current conditions.',
+              },
+              {
+                step: '3',
+                title: 'Understand the Details',
+                description: 'Click any trade to see the full breakdown - profit potential, risk, and why it was recommended.',
+              },
+              {
+                step: '4',
+                title: 'Test with Calculator',
+                description: 'Use the profit calculator to see how the trade performs at different stock prices.',
+              },
+              {
+                step: '5',
+                title: 'Practice First',
+                description: 'Add trades to your paper portfolio to track how they would perform without risking real money.',
+              },
+              {
+                step: '6',
+                title: 'Keep Notes',
+                description: 'Use the journal to record your thinking and learn from each trade over time.',
+              },
+            ].map((item) => (
+              <div key={item.step} className="pro-card">
+                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4">
+                  <span className="text-xl font-bold">{item.step}</span>
                 </div>
+                <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
+                <p className="pro-text">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* What You'll Learn */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="glow-orb glow-orb-green w-56 h-56 -bottom-28 -left-28 opacity-20" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      {/* Benefits Section */}
+      <section className="pro-section">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge variant="outline" className="mb-4 text-green-400 border-green-500/30">
-                Education First
-              </Badge>
-              <h2 className="text-3xl font-bold mb-6 gradient-text">Built for Learning</h2>
-              <p className="text-muted-foreground mb-8">
-                The Cockpit isn't just about finding trades - it's about understanding
-                why certain trades work in certain conditions. Every recommendation
-                comes with educational context.
-              </p>
-              <ul className="space-y-4">
-                {[
-                  'Understand how market regime affects strategy selection',
-                  'Learn to read option greeks and what they mean for your position',
-                  'See how time decay (theta) works in your favor as a seller',
-                  'Build discipline through journaling and tracking',
-                  'Practice with paper trading before using real capital',
-                ].map((item, index) => (
-                  <li key={item} className="flex items-start gap-3 group">
-                    <div className="h-6 w-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-green-500/30 transition-colors">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
-                    </div>
-                    <span className="text-sm">{item}</span>
+            <div className="pro-card">
+              <h3 className="text-2xl font-semibold mb-6">What You Get</h3>
+              <ul className="pro-feature-list space-y-2">
+                {benefits.map((benefit) => (
+                  <li key={benefit}>
+                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-lg">{benefit}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="glow-card p-8">
-              <div className="space-y-6">
-                <div className="group">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:neon-border transition-all">
-                      <PieChart className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="font-semibold">Score Breakdown</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground pl-13">
-                    See exactly how each trade is scored across multiple factors:
-                    premium yield, liquidity, IV rank, trend alignment, and more.
-                  </p>
-                </div>
-                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <div className="group">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:neon-border transition-all">
-                      <Shield className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="font-semibold">Risk Box</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground pl-13">
-                    Every trade displays maximum profit, maximum loss, breakeven,
-                    and probability of profit upfront - no hidden risks.
-                  </p>
-                </div>
-                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <div className="group">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:neon-border transition-all">
-                      <Brain className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="font-semibold">Learning Notes</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground pl-13">
-                    Contextual explanations help you understand why a strategy
-                    was selected and what to watch for during the trade.
-                  </p>
-                </div>
-              </div>
+            <div>
+              <h2 className="pro-heading text-3xl sm:text-4xl mb-6">
+                Built for Learning
+              </h2>
+              <p className="pro-text-large mb-6">
+                Whether you're new to options or have years of experience, this tool
+                helps you make better-informed decisions.
+              </p>
+              <p className="pro-text-large mb-6">
+                Every recommendation comes with an explanation. You'll understand not
+                just what to do, but why - so you can learn and improve over time.
+              </p>
+              <p className="pro-text">
+                Start with paper trading to build confidence before committing real capital.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 animated-gradient-bg" />
-        <div className="glow-orb glow-orb-cyan w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30" />
-        <div className="glow-orb glow-orb-purple w-64 h-64 top-0 right-1/4 opacity-20 float" />
-        <div className="glow-orb glow-orb-green w-48 h-48 bottom-0 left-1/4 opacity-20 float" style={{ animationDelay: '3s' }} />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          <div className="glow-card p-12 max-w-2xl mx-auto cyber-border">
-            <Zap className="h-12 w-12 text-primary mx-auto mb-6 neon-text" />
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 gradient-text">Ready to Start?</h2>
-            <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              Explore the dashboard, browse trade candidates, and start building
-              your options income strategy with paper trading.
-            </p>
-            <Link href="/dashboard">
-              <Button size="lg" variant="neon" className="text-lg px-10 py-6 pulse-glow">
-                <TrendingUp className="mr-2 h-5 w-5" />
-                Enter the Cockpit
-              </Button>
-            </Link>
-          </div>
+      <section className="pro-section-alt border-t border-border">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="pro-heading text-3xl sm:text-4xl mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="pro-text-large mb-8 max-w-2xl mx-auto">
+            Open the dashboard to see today's market conditions and
+            browse current trade recommendations.
+          </p>
+          <Link href="/dashboard">
+            <Button size="lg" className="text-xl px-12 py-7 h-auto">
+              <TrendingUp className="mr-3 h-7 w-7" />
+              Open Dashboard
+            </Button>
+          </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8 bg-black/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-primary/20 flex items-center justify-center neon-border">
-                <TrendingUp className="h-4 w-4 text-primary" />
+      <footer className="border-t border-border py-10 bg-card/50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-primary/20 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-semibold gradient-text">Income Options Cockpit</span>
+              <span className="text-lg font-semibold">Options Cockpit</span>
             </div>
-            <p className="text-sm text-muted-foreground text-center">
-              Educational platform for learning options income strategies.
+            <p className="text-base text-muted-foreground text-center">
+              Educational platform for learning options strategies.
               Not financial advice. Paper trading only.
             </p>
-            <Link href="/disclaimer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/disclaimer" className="text-base text-muted-foreground hover:text-primary transition-colors">
               Disclaimer
             </Link>
           </div>
