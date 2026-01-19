@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   TradingEngine,
   MockProvider,
+  PolygonProvider,
   DEFAULT_SYMBOLS,
   getDefaultSettings,
 } from '@cockpit/engine';
@@ -51,11 +52,16 @@ export async function POST(request: NextRequest) {
     const providerType = process.env.MARKET_DATA_PROVIDER || 'mock';
     let provider;
 
-    if (providerType === 'mock') {
-      provider = new MockProvider();
+    if (providerType === 'polygon') {
+      const apiKey = process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY;
+      if (!apiKey) {
+        logger.warn('Polygon API key not configured, falling back to mock provider');
+        provider = new MockProvider();
+      } else {
+        provider = new PolygonProvider(apiKey);
+        logger.info('Using Polygon provider with real market data');
+      }
     } else {
-      // For real providers, would initialize here with API key
-      // For now, fall back to mock
       provider = new MockProvider();
     }
 
