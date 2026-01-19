@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Trades', href: '/trades', icon: TrendingUp },
   { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
   { name: 'Strategies', href: '/strategies', icon: BookOpen },
