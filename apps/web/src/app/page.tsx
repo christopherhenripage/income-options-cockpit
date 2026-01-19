@@ -1,3 +1,4 @@
+// Landing page for Income Options Cockpit
 import Link from 'next/link';
 import {
   TrendingUp,
