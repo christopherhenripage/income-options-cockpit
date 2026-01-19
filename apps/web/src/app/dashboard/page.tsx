@@ -9,7 +9,7 @@ import { NarrativePreview } from '@/components/dashboard/narrative-preview';
 import { RiskSummary } from '@/components/dashboard/risk-summary';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Loader2, RefreshCw, AlertTriangle, X, Compass } from 'lucide-react';
 
 interface RecomputeResult {
   success: boolean;
@@ -41,6 +41,20 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // Check if first visit
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('cockpit-welcomed');
+    if (!hasVisited) {
+      setShowWelcome(true);
+    }
+  }, []);
+
+  const dismissWelcome = () => {
+    localStorage.setItem('cockpit-welcomed', 'true');
+    setShowWelcome(false);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -109,6 +123,54 @@ export default function DashboardPage() {
             Refresh
           </Button>
         </div>
+
+        {/* Welcome Card - First Visit */}
+        {showWelcome && (
+          <Card className="border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-primary/10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+            <CardContent className="pt-6 relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={dismissWelcome}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <Compass className="h-6 w-6 text-purple-400" />
+                </div>
+                <div className="pr-8">
+                  <h3 className="font-semibold text-lg mb-2">Welcome to Options Cockpit</h3>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>
+                      <strong className="text-foreground">Market Overview</strong> shows current conditions —
+                      trend direction, volatility level, and whether it's a risk-on or risk-off environment.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Top Trade Candidates</strong> are scored opportunities
+                      based on today's regime. Higher scores mean better alignment with current conditions.
+                      Each card shows the premium you'd collect and your maximum risk.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Everything is paper trading</strong> — real market data,
+                      simulated positions. Explore freely.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                    onClick={dismissWelcome}
+                  >
+                    Got it
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {error && (
           <Card className="border-yellow-500/30 bg-yellow-500/5">
