@@ -70,24 +70,34 @@ export class SymbolAnalyzer {
 
         const chain = await this.provider.getOptionChain(symbol, targetExp);
 
-        // Find ATM options
-        const atmStrike = Math.round(quote.price);
-        const atmPut = chain.puts.find(
-          (p) => Math.abs(p.strike - atmStrike) < quote.price * 0.02
-        );
-        const atmCall = chain.calls.find(
-          (c) => Math.abs(c.strike - atmStrike) < quote.price * 0.02
-        );
+        // Find ATM options (more lenient matching for real data)
+        const atmStrike = quote.price;
+        // Find closest put to ATM
+        const atmPut = chain.puts.length > 0
+          ? chain.puts.reduce((prev, curr) =>
+              Math.abs(curr.strike - atmStrike) < Math.abs(prev.strike - atmStrike) ? curr : prev
+            )
+          : null;
+        // Find closest call to ATM
+        const atmCall = chain.calls.length > 0
+          ? chain.calls.reduce((prev, curr) =>
+              Math.abs(curr.strike - atmStrike) < Math.abs(prev.strike - atmStrike) ? curr : prev
+            )
+          : null;
 
-        if (atmPut && atmCall) {
-          const avgVolume = Math.round((atmPut.volume + atmCall.volume) / 2);
-          const avgOI = Math.round(
-            (atmPut.openInterest + atmCall.openInterest) / 2
-          );
-          const avgSpread =
-            (calculateSpreadPct(atmPut.bid, atmPut.ask) +
-              calculateSpreadPct(atmCall.bid, atmCall.ask)) /
-            2;
+        if (atmPut || atmCall) {
+          // Handle cases where only put or call is available
+          const putVolume = atmPut?.volume || 0;
+          const callVolume = atmCall?.volume || 0;
+          const putOI = atmPut?.openInterest || 0;
+          const callOI = atmCall?.openInterest || 0;
+          const putSpread = atmPut ? calculateSpreadPct(atmPut.bid, atmPut.ask) : 10;
+          const callSpread = atmCall ? calculateSpreadPct(atmCall.bid, atmCall.ask) : 10;
+
+          const count = (atmPut ? 1 : 0) + (atmCall ? 1 : 0);
+          const avgVolume = Math.round((putVolume + callVolume) / count);
+          const avgOI = Math.round((putOI + callOI) / count);
+          const avgSpread = (putSpread + callSpread) / count;
 
           liquidityResult = scoreLiquidity(
             avgVolume,

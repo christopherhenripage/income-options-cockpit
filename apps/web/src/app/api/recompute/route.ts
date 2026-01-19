@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
       settingsVersionId,
       riskProfilePreset,
       symbols: DEFAULT_SYMBOLS.slice(0, 11), // Core symbols
-      minScore: 25, // Lowered to show trades even in challenging market conditions
-      topPerStrategy: 5,
-      maxPerSymbol: 3,
+      minScore: 0, // Show all trades for debugging
+      topPerStrategy: 10,
+      maxPerSymbol: 5,
     });
 
     logger.info('Recompute completed', {
@@ -110,6 +110,16 @@ export async function POST(request: NextRequest) {
           maxLoss: c.riskBox.maxLoss,
           dte: c.dte,
         })),
+        // Debug: show score distribution of all candidates
+        scoreDistribution: {
+          total: result.allCandidates.length,
+          above50: result.allCandidates.filter(c => c.score >= 50).length,
+          above40: result.allCandidates.filter(c => c.score >= 40).length,
+          above30: result.allCandidates.filter(c => c.score >= 30).length,
+          above20: result.allCandidates.filter(c => c.score >= 20).length,
+          above10: result.allCandidates.filter(c => c.score >= 10).length,
+          topScores: result.allCandidates.slice(0, 5).map(c => ({ symbol: c.symbol, strategy: c.strategyType, score: c.score })),
+        },
       },
       { headers: rateLimitResult.headers }
     );
