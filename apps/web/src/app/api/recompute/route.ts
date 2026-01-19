@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
       settingsVersionId,
       riskProfilePreset,
       symbols: DEFAULT_SYMBOLS.slice(0, 11), // Core symbols
-      minScore: 40,
-      topPerStrategy: 3,
-      maxPerSymbol: 2,
+      minScore: 25, // Lowered to show trades even in challenging market conditions
+      topPerStrategy: 5,
+      maxPerSymbol: 3,
     });
 
     logger.info('Recompute completed', {
