@@ -112,7 +112,7 @@ function generateExpirations(): string[] {
     expirations.push(monthDate.toISOString().split('T')[0]);
   }
 
-  return [...new Set(expirations)].sort();
+  return Array.from(new Set(expirations)).sort();
 }
 
 // Generate option chain for a symbol and expiration

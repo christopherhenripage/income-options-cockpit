@@ -214,19 +214,19 @@ export function scoreLiquidity(
   minVolume: number,
   minOI: number,
   maxSpread: number
-): { score: number; meetsMinimum: boolean } {
+): { volumeScore: number; optionOIScore: number; spreadScore: number; overallScore: number; meetsMinimum: boolean } {
   // Volume score
   const volumeScore = Math.min(100, (volume / (minVolume * 5)) * 100);
 
   // OI score
-  const oiScore = Math.min(100, (openInterest / (minOI * 5)) * 100);
+  const optionOIScore = Math.min(100, (openInterest / (minOI * 5)) * 100);
 
   // Spread score (inverse - lower is better)
   const spreadScore = spreadPct <= maxSpread
     ? Math.max(0, 100 - (spreadPct / maxSpread) * 50)
     : Math.max(0, 50 - ((spreadPct - maxSpread) / maxSpread) * 50);
 
-  const overallScore = (volumeScore * 0.3 + oiScore * 0.3 + spreadScore * 0.4);
+  const overallScore = (volumeScore * 0.3 + optionOIScore * 0.3 + spreadScore * 0.4);
 
   const meetsMinimum =
     volume >= minVolume &&
@@ -234,7 +234,10 @@ export function scoreLiquidity(
     spreadPct <= maxSpread;
 
   return {
-    score: Math.round(overallScore),
+    volumeScore: Math.round(volumeScore),
+    optionOIScore: Math.round(optionOIScore),
+    spreadScore: Math.round(spreadScore),
+    overallScore: Math.round(overallScore),
     meetsMinimum,
   };
 }

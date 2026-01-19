@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // Badge types and their descriptions
-export const BADGE_TYPES = {
+const BADGE_TYPES = {
   journaling_streak: {
     name: 'Journaling Streak',
     description: (level: number) => `${level} consecutive days of journaling`,

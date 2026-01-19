@@ -34,7 +34,7 @@ export class TradeRanker {
     }
 
     const result: TradePacket[] = [];
-    for (const [, strategyPackets] of byStrategy) {
+    for (const strategyPackets of Array.from(byStrategy.values())) {
       const sorted = this.rankByScore(strategyPackets);
       result.push(...sorted.slice(0, topN));
     }
