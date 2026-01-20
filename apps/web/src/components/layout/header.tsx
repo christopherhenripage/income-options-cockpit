@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Bell, GraduationCap, Gauge, RefreshCw } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -124,6 +125,8 @@ export function Header({ title, subtitle }: HeaderProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          <ThemeToggle />
 
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
