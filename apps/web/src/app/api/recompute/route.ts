@@ -3,6 +3,7 @@ import {
   TradingEngine,
   MockProvider,
   PolygonProvider,
+  TradierProvider,
   DEFAULT_SYMBOLS,
   getDefaultSettings,
 } from '@cockpit/engine';
@@ -50,7 +51,9 @@ export async function POST(request: NextRequest) {
 
     // Initialize provider based on environment (trim to handle any whitespace in env vars)
     const providerType = (process.env.MARKET_DATA_PROVIDER || 'mock').trim();
-    const apiKey = (process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY || '').trim();
+    const polygonApiKey = (process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY || '').trim();
+    const tradierApiKey = (process.env.TRADIER_API_KEY || '').trim();
+    const useTradierSandbox = process.env.TRADIER_USE_SANDBOX !== 'false'; // Default to sandbox
 
     // Get settings (in real app, from database)
     const settings = getDefaultSettings('balanced');
@@ -77,16 +80,39 @@ export async function POST(request: NextRequest) {
 
     let result;
     let usingLiveData = false;
+    let providerUsed = 'mock';
 
-    // Try Polygon first, fall back to mock if it fails (e.g., weekends, API issues)
-    if (providerType === 'polygon' && apiKey) {
+    // Priority: Tradier (best free options data) > Polygon > Mock
+    // Try Tradier first - free sandbox includes 15-min delayed data with Greeks
+    if ((providerType === 'tradier' || tradierApiKey) && tradierApiKey) {
       try {
-        const polygonProvider = new PolygonProvider(apiKey);
+        const tradierProvider = new TradierProvider(tradierApiKey, useTradierSandbox);
+        const engine = new TradingEngine(tradierProvider);
+        logger.info('Attempting to use Tradier provider with real market data', {
+          sandbox: useTradierSandbox,
+        });
+        result = await engine.recompute(paperTradingSettings, recomputeOptions);
+        usingLiveData = true;
+        providerUsed = 'tradier';
+        logger.info('Successfully fetched live market data from Tradier');
+      } catch (tradierError) {
+        logger.warn('Tradier provider failed, trying next provider', {
+          error: tradierError instanceof Error ? tradierError.message : 'Unknown error',
+        });
+        // Fall through to try Polygon
+      }
+    }
+
+    // Try Polygon if Tradier isn't configured or failed
+    if (!result && providerType === 'polygon' && polygonApiKey) {
+      try {
+        const polygonProvider = new PolygonProvider(polygonApiKey);
         const engine = new TradingEngine(polygonProvider);
         logger.info('Attempting to use Polygon provider with real market data');
         result = await engine.recompute(paperTradingSettings, recomputeOptions);
         usingLiveData = true;
-        logger.info('Successfully fetched live market data');
+        providerUsed = 'polygon';
+        logger.info('Successfully fetched live market data from Polygon');
       } catch (polygonError) {
         logger.warn('Polygon provider failed, falling back to mock data', {
           error: polygonError instanceof Error ? polygonError.message : 'Unknown error',
@@ -95,12 +121,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Use mock provider if Polygon wasn't configured or failed
+    // Use mock provider if no live data provider succeeded
     if (!result) {
       const mockProvider = new MockProvider();
       const engine = new TradingEngine(mockProvider);
       logger.info('Using mock provider');
       result = await engine.recompute(paperTradingSettings, recomputeOptions);
+      providerUsed = 'mock';
     }
 
     logger.info('Recompute completed', {
@@ -115,6 +142,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         liveData: usingLiveData,
+        provider: providerUsed,
         runId: result.runId,
         stats: result.stats,
         regime: {
@@ -169,10 +197,15 @@ export async function GET(request: NextRequest) {
   }
 
   // Simple health check / status endpoint
+  const tradierConfigured = !!process.env.TRADIER_API_KEY?.trim();
+  const polygonConfigured = !!(process.env.POLYGON_API_KEY?.trim() || process.env.MARKET_DATA_API_KEY?.trim());
+
   return NextResponse.json(
     {
       status: 'ok',
       provider: (process.env.MARKET_DATA_PROVIDER || 'mock').trim(),
+      tradierConfigured,
+      polygonConfigured,
       tradingEnabled: process.env.TRADING_ENABLED === 'true',
       brokerExecutionEnabled: process.env.BROKER_EXECUTION_ENABLED === 'true',
     },

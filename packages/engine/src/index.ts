@@ -2,7 +2,7 @@
 export * from './types';
 
 // Providers
-export { MockProvider, MOCK_SYMBOLS, PolygonProvider } from './providers';
+export { MockProvider, MOCK_SYMBOLS, PolygonProvider, TradierProvider } from './providers';
 export type { MarketDataProvider } from './providers';
 
 // Signals
