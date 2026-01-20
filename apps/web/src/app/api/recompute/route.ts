@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     {
       status: 'ok',
-      provider: process.env.MARKET_DATA_PROVIDER || 'mock',
+      provider: (process.env.MARKET_DATA_PROVIDER || 'mock').trim(),
       tradingEnabled: process.env.TRADING_ENABLED === 'true',
       brokerExecutionEnabled: process.env.BROKER_EXECUTION_ENABLED === 'true',
     },
