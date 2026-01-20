@@ -18,6 +18,10 @@ import {
   Copy,
   Check,
   FileText,
+  GraduationCap,
+  ChevronDown,
+  ChevronUp,
+  BookOpen,
 } from 'lucide-react';
 import {
   cn,
@@ -27,6 +31,10 @@ import {
   getStrategyLabel,
   getScoreColor,
 } from '@/lib/utils';
+import { TermTooltip, ExplainedNumber } from '@/components/learning/term-tooltip';
+import { WorstCaseBox } from '@/components/learning/worst-case-box';
+import { PLDiagram } from '@/components/learning/pl-diagram';
+import { strategyExplanations } from '@/lib/glossary';
 
 interface OptionLeg {
   action: 'buy' | 'sell';
@@ -191,6 +199,7 @@ function formatAmeritradeOrder(candidate: TradeCandidate): {
 
 export function TopPick({ candidate, regime, loading }: TopPickProps) {
   const [copied, setCopied] = useState(false);
+  const [showLearning, setShowLearning] = useState(true);
 
   const handleCopy = async (text: string) => {
     try {
@@ -419,6 +428,166 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Learning Mode Section - Collapsible */}
+        <div className="mt-6 pt-6 border-t border-border">
+          <button
+            onClick={() => setShowLearning(!showLearning)}
+            className="w-full flex items-center justify-between text-left hover:text-primary transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-primary" />
+              <span className="font-semibold">Learn About This Trade</span>
+              <Badge variant="outline" className="text-xs border-primary/30 text-primary">
+                New to options?
+              </Badge>
+            </div>
+            {showLearning ? (
+              <ChevronUp className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
+
+          {showLearning && (
+            <div className="mt-6 space-y-6">
+              {/* Plain English Strategy Explanation */}
+              <div className="glass-panel p-5 rounded-xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold">
+                    What is a <TermTooltip term={candidate.strategyType.replace('_', '-')}>{getStrategyLabel(candidate.strategyType)}</TermTooltip>?
+                  </h4>
+                </div>
+
+                {strategyExplanations[candidate.strategyType] && (
+                  <div className="space-y-4">
+                    <p className="text-lg font-medium text-foreground">
+                      {strategyExplanations[candidate.strategyType].oneLiner}
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+                        <p className="text-green-400 font-medium mb-1">Why do this?</p>
+                        <p className="text-muted-foreground">
+                          {strategyExplanations[candidate.strategyType].whyDoThis}
+                        </p>
+                      </div>
+                      <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
+                        <p className="text-blue-400 font-medium mb-1">Best when...</p>
+                        <p className="text-muted-foreground">
+                          {strategyExplanations[candidate.strategyType].bestWhen}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-muted/30 rounded-lg p-4">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="text-foreground font-medium">Think of it like this:</span>{' '}
+                        {strategyExplanations[candidate.strategyType].analogy}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Key Numbers Explained */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="glass-panel p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      <TermTooltip term="credit">Premium</TermTooltip> You Receive
+                    </span>
+                    <DollarSign className="h-4 w-4 text-green-400" />
+                  </div>
+                  <p className="text-2xl font-bold text-green-400">
+                    {formatCurrency(candidate.netCredit)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This money is yours to keep immediately, no matter what happens next.
+                  </p>
+                </div>
+
+                <div className="glass-panel p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      <TermTooltip term="max-loss">Maximum Risk</TermTooltip>
+                    </span>
+                    <Shield className="h-4 w-4 text-red-400" />
+                  </div>
+                  <p className="text-2xl font-bold text-red-400">
+                    {formatCurrency(candidate.maxLoss)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The absolute worst case. This rarely happens with careful strike selection.
+                  </p>
+                </div>
+
+                <div className="glass-panel p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      <TermTooltip term="dte">Time Until Expiration</TermTooltip>
+                    </span>
+                    <Clock className="h-4 w-4 text-blue-400" />
+                  </div>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {candidate.dte} days
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {candidate.dte <= 30
+                      ? 'Shorter timeframe - faster results but watch closely.'
+                      : candidate.dte <= 45
+                        ? 'Sweet spot - good theta decay, time to adjust if needed.'
+                        : 'Longer timeframe - more premium but ties up capital longer.'
+                    }
+                  </p>
+                </div>
+              </div>
+
+              {/* Worst Case Scenario */}
+              {candidate.legs && candidate.legs.length > 0 && (
+                <WorstCaseBox
+                  strategyType={candidate.strategyType}
+                  maxLoss={candidate.maxLoss}
+                  strike={candidate.legs[0].strike}
+                  underlyingPrice={candidate.underlyingPrice}
+                  credit={candidate.netCredit / 100}
+                  dte={candidate.dte}
+                  symbol={candidate.symbol}
+                />
+              )}
+
+              {/* P&L Diagram */}
+              {candidate.legs && candidate.legs.length > 0 && candidate.underlyingPrice && (
+                <PLDiagram
+                  strategyType={candidate.strategyType}
+                  strike={candidate.legs[0].strike}
+                  strike2={candidate.legs.length > 1 ? candidate.legs[1].strike : undefined}
+                  underlyingPrice={candidate.underlyingPrice}
+                  credit={candidate.netCredit / 100}
+                  maxProfit={candidate.netCredit}
+                  maxLoss={candidate.maxLoss}
+                  breakeven={candidate.legs[0].strike - (candidate.netCredit / 100)}
+                />
+              )}
+
+              {/* Quick Glossary */}
+              <div className="glass-panel p-4 rounded-xl">
+                <p className="text-sm font-medium mb-3">Quick Reference - Hover for definitions:</p>
+                <div className="flex flex-wrap gap-2">
+                  <TermTooltip term="delta" className="text-sm bg-muted/50 px-2 py-1 rounded">Delta</TermTooltip>
+                  <TermTooltip term="theta" className="text-sm bg-muted/50 px-2 py-1 rounded">Theta</TermTooltip>
+                  <TermTooltip term="iv" className="text-sm bg-muted/50 px-2 py-1 rounded">IV</TermTooltip>
+                  <TermTooltip term="strike" className="text-sm bg-muted/50 px-2 py-1 rounded">Strike</TermTooltip>
+                  <TermTooltip term="premium" className="text-sm bg-muted/50 px-2 py-1 rounded">Premium</TermTooltip>
+                  <TermTooltip term="assignment" className="text-sm bg-muted/50 px-2 py-1 rounded">Assignment</TermTooltip>
+                  <TermTooltip term="itm" className="text-sm bg-muted/50 px-2 py-1 rounded">ITM</TermTooltip>
+                  <TermTooltip term="otm" className="text-sm bg-muted/50 px-2 py-1 rounded">OTM</TermTooltip>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
