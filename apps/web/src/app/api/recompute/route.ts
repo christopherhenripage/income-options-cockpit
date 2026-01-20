@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
     const settingsVersionId = 'default-settings';
     const riskProfilePreset = 'balanced';
 
-    // Initialize provider based on environment
-    const providerType = process.env.MARKET_DATA_PROVIDER || 'mock';
-    const apiKey = process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY;
+    // Initialize provider based on environment (trim to handle any whitespace in env vars)
+    const providerType = (process.env.MARKET_DATA_PROVIDER || 'mock').trim();
+    const apiKey = (process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY || '').trim();
 
     // Get settings (in real app, from database)
     const settings = getDefaultSettings('balanced');
