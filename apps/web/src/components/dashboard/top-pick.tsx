@@ -35,6 +35,7 @@ import { TermTooltip, ExplainedNumber } from '@/components/learning/term-tooltip
 import { WorstCaseBox } from '@/components/learning/worst-case-box';
 import { PLDiagram } from '@/components/learning/pl-diagram';
 import { strategyExplanations } from '@/lib/glossary';
+import { useLearning } from '@/contexts/learning-context';
 
 interface OptionLeg {
   action: 'buy' | 'sell';
@@ -200,6 +201,7 @@ function formatAmeritradeOrder(candidate: TradeCandidate): {
 export function TopPick({ candidate, regime, loading }: TopPickProps) {
   const [copied, setCopied] = useState(false);
   const [showLearning, setShowLearning] = useState(true);
+  const { explainMode } = useLearning();
 
   const handleCopy = async (text: string) => {
     try {
@@ -430,7 +432,8 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
           </div>
         </div>
 
-        {/* Learning Mode Section - Collapsible */}
+        {/* Learning Mode Section - Only shown when Explain Mode is on */}
+        {explainMode && (
         <div className="mt-6 pt-6 border-t border-border">
           <button
             onClick={() => setShowLearning(!showLearning)}
@@ -589,6 +592,7 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
             </div>
           )}
         </div>
+        )}
       </CardContent>
     </Card>
   );

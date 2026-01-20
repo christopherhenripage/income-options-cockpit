@@ -5,6 +5,10 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced';
 
 interface LearningContextType {
+  // Simple master toggle
+  explainMode: boolean;
+  setExplainMode: (on: boolean) => void;
+  // Granular controls (for future settings page)
   experienceLevel: ExperienceLevel;
   setExperienceLevel: (level: ExperienceLevel) => void;
   showGlossaryTooltips: boolean;
@@ -18,6 +22,7 @@ interface LearningContextType {
 const LearningContext = createContext<LearningContextType | undefined>(undefined);
 
 export function LearningProvider({ children }: { children: ReactNode }) {
+  const [explainMode, setExplainMode] = useState(true);
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>('beginner');
   const [showGlossaryTooltips, setShowGlossaryTooltips] = useState(true);
   const [showWorstCase, setShowWorstCase] = useState(true);
@@ -29,6 +34,7 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     if (saved) {
       try {
         const prefs = JSON.parse(saved);
+        if (typeof prefs.explainMode === 'boolean') setExplainMode(prefs.explainMode);
         if (prefs.experienceLevel) setExperienceLevel(prefs.experienceLevel);
         if (typeof prefs.showGlossaryTooltips === 'boolean') setShowGlossaryTooltips(prefs.showGlossaryTooltips);
         if (typeof prefs.showWorstCase === 'boolean') setShowWorstCase(prefs.showWorstCase);
@@ -42,15 +48,18 @@ export function LearningProvider({ children }: { children: ReactNode }) {
   // Save preferences to localStorage
   useEffect(() => {
     localStorage.setItem('learningPreferences', JSON.stringify({
+      explainMode,
       experienceLevel,
       showGlossaryTooltips,
       showWorstCase,
       showPLDiagrams,
     }));
-  }, [experienceLevel, showGlossaryTooltips, showWorstCase, showPLDiagrams]);
+  }, [explainMode, experienceLevel, showGlossaryTooltips, showWorstCase, showPLDiagrams]);
 
   return (
     <LearningContext.Provider value={{
+      explainMode,
+      setExplainMode,
       experienceLevel,
       setExperienceLevel,
       showGlossaryTooltips,
@@ -77,4 +86,10 @@ export function useLearning() {
 export function useIsBeginner() {
   const { experienceLevel } = useLearning();
   return experienceLevel === 'beginner';
+}
+
+// Helper to check if explain mode is on
+export function useExplainMode() {
+  const { explainMode } = useLearning();
+  return explainMode;
 }
