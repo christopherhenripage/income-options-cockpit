@@ -195,7 +195,7 @@ export class PolygonProvider implements MarketDataProvider {
   private minRequestInterval = 200; // 200ms between requests (safe for free tier)
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY || '';
+    this.apiKey = (apiKey || process.env.POLYGON_API_KEY || process.env.MARKET_DATA_API_KEY || '').trim();
     if (!this.apiKey) {
       throw new Error('Polygon API key is required. Set POLYGON_API_KEY or MARKET_DATA_API_KEY environment variable.');
     }
