@@ -297,7 +297,7 @@ export class SchwabBrokerProvider implements BrokerProvider {
         throw new Error(`Token refresh failed: ${response.status} - ${error}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as { access_token: string; refresh_token?: string; expires_in: number };
 
       // Update stored tokens
       this.tokens = {

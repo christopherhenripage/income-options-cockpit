@@ -4,6 +4,7 @@ import {
   MockProvider,
   PolygonProvider,
   TradierProvider,
+  YahooFinanceProvider,
   DEFAULT_SYMBOLS,
   getDefaultSettings,
 } from '@cockpit/engine';
@@ -82,9 +83,27 @@ export async function POST(request: NextRequest) {
     let usingLiveData = false;
     let providerUsed = 'mock';
 
-    // Priority: Tradier (best free options data) > Polygon > Mock
-    // Try Tradier first - free sandbox includes 15-min delayed data with Greeks
-    if ((providerType === 'tradier' || tradierApiKey) && tradierApiKey) {
+    // Priority: Yahoo Finance (free, no key) > Tradier > Polygon > Mock
+    // Try Yahoo Finance first - free delayed data, no API key required
+    if (providerType !== 'mock') {
+      try {
+        const yahooProvider = new YahooFinanceProvider();
+        const engine = new TradingEngine(yahooProvider);
+        logger.info('Attempting to use Yahoo Finance provider with real market data');
+        result = await engine.recompute(paperTradingSettings, recomputeOptions);
+        usingLiveData = true;
+        providerUsed = 'yahoo';
+        logger.info('Successfully fetched live market data from Yahoo Finance');
+      } catch (yahooError) {
+        logger.warn('Yahoo Finance provider failed, trying next provider', {
+          error: yahooError instanceof Error ? yahooError.message : 'Unknown error',
+        });
+        // Fall through to try Tradier
+      }
+    }
+
+    // Try Tradier if Yahoo failed and API key is configured
+    if (!result && tradierApiKey) {
       try {
         const tradierProvider = new TradierProvider(tradierApiKey, useTradierSandbox);
         const engine = new TradingEngine(tradierProvider);
@@ -103,8 +122,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Try Polygon if Tradier isn't configured or failed
-    if (!result && providerType === 'polygon' && polygonApiKey) {
+    // Try Polygon if others failed and API key is configured
+    if (!result && polygonApiKey) {
       try {
         const polygonProvider = new PolygonProvider(polygonApiKey);
         const engine = new TradingEngine(polygonProvider);

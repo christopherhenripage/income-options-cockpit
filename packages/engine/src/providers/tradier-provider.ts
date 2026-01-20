@@ -163,7 +163,7 @@ export class TradierProvider implements MarketDataProvider {
       throw new Error(`Tradier API error: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
   }
 
   async getQuote(symbol: string): Promise<Quote> {
