@@ -4,33 +4,34 @@
 
 @layer base {
   :root {
-    --background: 220 20% 4%;
-    --foreground: 210 20% 98%;
+    /* Soft dark theme - easier on eyes than pure black */
+    --background: 222 15% 8%;
+    --foreground: 210 20% 96%;
 
-    --card: 220 15% 8%;
-    --card-foreground: 210 20% 98%;
+    --card: 222 14% 11%;
+    --card-foreground: 210 20% 96%;
 
-    --popover: 220 15% 8%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 14% 11%;
+    --popover-foreground: 210 20% 96%;
 
-    --primary: 195 100% 50%;
-    --primary-foreground: 220 20% 4%;
+    --primary: 195 90% 55%;
+    --primary-foreground: 222 15% 8%;
 
-    --secondary: 220 15% 15%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 222 14% 16%;
+    --secondary-foreground: 210 20% 96%;
 
-    --muted: 220 15% 15%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 222 14% 16%;
+    --muted-foreground: 215 15% 60%;
 
-    --accent: 195 100% 50%;
-    --accent-foreground: 220 20% 4%;
+    --accent: 195 90% 55%;
+    --accent-foreground: 222 15% 8%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 15%;
-    --ring: 195 100% 50%;
+    --border: 222 14% 22%;
+    --input: 222 14% 14%;
+    --ring: 195 90% 55%;
 
     --radius: 0.5rem;
 
@@ -66,7 +67,7 @@
 
 /* Subtle geometric pattern - hexagonal/sacred geometry inspired */
 .sacred-geo-bg {
-  background-color: hsl(220, 20%, 4%);
+  background-color: hsl(222, 15%, 8%);
   background-image:
     radial-gradient(circle at 25% 25%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
@@ -97,7 +98,7 @@
     radial-gradient(ellipse at 20% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
-    linear-gradient(180deg, hsl(220, 20%, 4%) 0%, hsl(250, 25%, 6%) 50%, hsl(220, 20%, 4%) 100%);
+    linear-gradient(180deg, hsl(222, 15%, 8%) 0%, hsl(250, 20%, 10%) 50%, hsl(222, 15%, 8%) 100%);
 }
 
 /* ========================================
