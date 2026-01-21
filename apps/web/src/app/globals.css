@@ -2,78 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   DESIGN PHILOSOPHY:
+   Clean, confident, with quiet personality.
+   Not another boring fintech clone.
+   ======================================== */
+
 @layer base {
   :root {
-    /* Soft charcoal theme - noticeably lighter than black */
-    --background: 220 15% 13%;
-    --foreground: 210 20% 95%;
+    /* Dark theme - warm charcoal, not cold gray */
+    --background: 220 12% 10%;
+    --foreground: 45 10% 92%;
 
-    --card: 220 14% 16%;
-    --card-foreground: 210 20% 95%;
+    --card: 220 12% 13%;
+    --card-foreground: 45 10% 92%;
 
-    --popover: 220 14% 16%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 220 12% 13%;
+    --popover-foreground: 45 10% 92%;
 
-    --primary: 195 85% 50%;
-    --primary-foreground: 220 15% 98%;
+    /* Primary: Warm amber/copper - unconventional but sophisticated */
+    --primary: 35 90% 55%;
+    --primary-foreground: 220 12% 10%;
 
-    --secondary: 220 14% 20%;
-    --secondary-foreground: 210 20% 95%;
+    --secondary: 220 10% 18%;
+    --secondary-foreground: 45 10% 92%;
 
-    --muted: 220 12% 22%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 195 85% 50%;
-    --accent-foreground: 220 15% 98%;
+    --accent: 35 90% 55%;
+    --accent-foreground: 220 12% 10%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 45 10% 98%;
 
-    --border: 220 12% 26%;
-    --input: 220 14% 18%;
-    --ring: 195 85% 50%;
+    --border: 220 10% 20%;
+    --input: 220 12% 15%;
+    --ring: 35 90% 55%;
 
-    --radius: 0.5rem;
-
-    /* Accent colors */
-    --accent-purple: 270 70% 55%;
-    --accent-gold: 45 90% 55%;
-    --accent-deep: 250 60% 40%;
+    --radius: 0.625rem;
   }
 
-  /* Light mode */
   .light {
-    --background: 0 0% 98%;
-    --foreground: 222 20% 15%;
+    --background: 45 20% 97%;
+    --foreground: 220 20% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 20% 15%;
+    --card-foreground: 220 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 20% 15%;
+    --popover-foreground: 220 20% 12%;
 
-    --primary: 195 90% 40%;
+    --primary: 35 85% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 222 20% 15%;
+    --secondary: 45 15% 92%;
+    --secondary-foreground: 220 20% 12%;
 
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 45 15% 94%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 195 90% 40%;
+    --accent: 35 85% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 92%;
-    --ring: 195 90% 40%;
-
-    --accent-purple: 270 70% 50%;
-    --accent-gold: 45 90% 50%;
-    --accent-deep: 250 60% 45%;
+    --border: 45 15% 88%;
+    --input: 45 15% 92%;
+    --ring: 35 85% 45%;
   }
 }
 
@@ -81,679 +78,391 @@
   * {
     @apply border-border;
   }
+
   html {
-    font-size: 18px; /* Larger base font for readability */
+    font-size: 16px;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    line-height: 1.7; /* More line spacing for readability */
   }
-  /* Larger text for older readers */
-  h1 { @apply text-4xl sm:text-5xl font-bold leading-tight; }
-  h2 { @apply text-3xl sm:text-4xl font-bold leading-tight; }
-  h3 { @apply text-xl sm:text-2xl font-semibold; }
-  p { @apply text-base sm:text-lg leading-relaxed; }
+
+  /* Clean typography scale */
+  h1 { @apply text-3xl sm:text-4xl font-semibold tracking-tight; }
+  h2 { @apply text-2xl sm:text-3xl font-semibold tracking-tight; }
+  h3 { @apply text-lg sm:text-xl font-medium; }
+  p { @apply text-base leading-relaxed; }
 }
 
 /* ========================================
-   SACRED GEOMETRY BACKGROUNDS (Tool-inspired)
+   SEMANTIC COLORS - Keep these simple
    ======================================== */
 
-/* Subtle geometric pattern - hexagonal/sacred geometry inspired */
-.sacred-geo-bg {
-  background-color: hsl(220, 15%, 13%);
-  background-image:
-    radial-gradient(circle at 25% 25%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 17.32v34.64L30 69.28 0 51.96V17.32L30 0zm0 10.39L10 22.5v25l20 12.11 20-12.11v-25L30 10.39z' fill='rgba(100,100,150,0.02)' fill-rule='evenodd'/%3E%3C/svg%3E");
-}
+/* Money colors - the universal language */
+.text-profit { @apply text-emerald-400; }
+.text-loss { @apply text-rose-400; }
+.bg-profit { @apply bg-emerald-500/10; }
+.bg-loss { @apply bg-rose-500/10; }
 
-/* Subtle concentric circles pattern */
-.circles-bg {
-  background-image:
-    radial-gradient(circle at center, transparent 0%, transparent 30%, rgba(168, 85, 247, 0.02) 30%, rgba(168, 85, 247, 0.02) 31%, transparent 31%),
-    radial-gradient(circle at center, transparent 0%, transparent 50%, rgba(0, 212, 255, 0.015) 50%, rgba(0, 212, 255, 0.015) 51%, transparent 51%),
-    radial-gradient(circle at center, transparent 0%, transparent 70%, rgba(168, 85, 247, 0.01) 70%, rgba(168, 85, 247, 0.01) 71%, transparent 71%);
-}
+/* Score colors */
+.score-high { @apply text-emerald-400; }
+.score-medium { @apply text-amber-400; }
+.score-low { @apply text-rose-400; }
 
-/* Grid background - enhanced */
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(168, 85, 247, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.02) 1px, transparent 1px),
-    linear-gradient(rgba(0, 212, 255, 0.01) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.01) 1px, transparent 1px);
-  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-}
-
-/* Hero section geometric */
-.hero-geo {
-  background:
-    radial-gradient(ellipse at 20% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 70%),
-    linear-gradient(180deg, hsl(220, 15%, 13%) 0%, hsl(250, 18%, 15%) 50%, hsl(220, 15%, 13%) 100%);
-}
-
-.light .hero-geo {
-  background:
-    radial-gradient(ellipse at 20% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 70%),
-    linear-gradient(180deg, hsl(0, 0%, 98%) 0%, hsl(220, 20%, 96%) 50%, hsl(0, 0%, 98%) 100%);
-}
+/* Strategy badges - subtle, not screaming */
+.strategy-csp { @apply bg-sky-500/10 text-sky-400 border-sky-500/20; }
+.strategy-cc { @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20; }
+.strategy-pcs { @apply bg-violet-500/10 text-violet-400 border-violet-500/20; }
+.strategy-ccs { @apply bg-amber-500/10 text-amber-400 border-amber-500/20; }
 
 /* ========================================
-   ENHANCED GLASS PANELS & CARDS
+   CARDS & CONTAINERS - Clean with subtle depth
    ======================================== */
 
-/* Glass panel effect - refined */
-.glass-panel {
-  @apply backdrop-blur-md border rounded-lg;
-  background: linear-gradient(135deg,
-    hsla(220, 15%, 16%, 0.95) 0%,
-    hsla(250, 15%, 14%, 0.9) 100%);
-  border-color: hsla(220, 15%, 28%, 0.5);
+.card-elevated {
+  @apply bg-card border border-border rounded-xl;
   box-shadow:
-    0 4px 30px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-.light .glass-panel {
-  background: linear-gradient(135deg,
-    hsla(0, 0%, 100%, 0.95) 0%,
-    hsla(220, 20%, 98%, 0.9) 100%);
-  border-color: hsla(220, 15%, 85%, 0.8);
+.card-elevated:hover {
+  @apply border-primary/30;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-/* Premium card with depth */
-.premium-card {
-  @apply rounded-xl border transition-all duration-300;
-  background: linear-gradient(145deg,
-    hsl(220, 15%, 9%) 0%,
-    hsl(250, 15%, 7%) 100%);
-  border-color: hsla(220, 15%, 22%, 0.6);
+/* Featured card - the star of the show */
+.card-featured {
+  @apply bg-card border-2 border-primary/30 rounded-xl relative overflow-hidden;
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.02),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 4px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(var(--primary), 0.1);
 }
 
-.premium-card:hover {
-  border-color: hsla(270, 70%, 55%, 0.3);
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 30px rgba(168, 85, 247, 0.08),
-    0 0 0 1px rgba(168, 85, 247, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
-}
-
-/* Glowing card - refined with purple/gold accents */
-.glow-card {
-  position: relative;
-  background: linear-gradient(145deg, hsl(220, 15%, 9%), hsl(250, 15%, 7%));
-  border: 1px solid rgba(168, 85, 247, 0.15);
-  border-radius: 1rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-
-.glow-card::before {
+/* Subtle warm glow for featured items - not neon, just warmth */
+.card-featured::before {
   content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 1rem;
-  padding: 1px;
-  background: linear-gradient(135deg,
-    rgba(0, 212, 255, 0.4),
-    rgba(168, 85, 247, 0.4),
-    rgba(212, 175, 55, 0.3),
-    rgba(168, 85, 247, 0.4));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  @apply absolute -top-24 -right-24 w-48 h-48 rounded-full opacity-30;
+  background: radial-gradient(circle, hsl(35, 90%, 55%) 0%, transparent 70%);
+  filter: blur(40px);
 }
 
-.glow-card:hover::before {
-  opacity: 1;
+/* Glass effect - refined, not overdone */
+.glass {
+  @apply backdrop-blur-sm;
+  background: hsla(220, 12%, 13%, 0.8);
+  border: 1px solid hsla(220, 10%, 25%, 0.5);
 }
 
-.glow-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 25px 50px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(168, 85, 247, 0.1),
-    0 0 80px rgba(0, 212, 255, 0.05);
+.light .glass {
+  background: hsla(0, 0%, 100%, 0.8);
+  border: 1px solid hsla(220, 15%, 85%, 0.8);
 }
 
 /* ========================================
-   NEON & GLOW EFFECTS - Enhanced
+   BUTTONS - Confident, not flashy
    ======================================== */
 
-.neon-border {
-  box-shadow:
-    0 0 5px rgba(0, 212, 255, 0.3),
-    0 0 10px rgba(0, 212, 255, 0.2),
-    0 0 20px rgba(0, 212, 255, 0.1),
-    0 0 40px rgba(168, 85, 247, 0.05);
+.btn-primary {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-200;
+  @apply bg-primary text-primary-foreground;
+  @apply hover:opacity-90 hover:shadow-lg;
+  @apply active:scale-[0.98];
 }
 
-.neon-text {
-  text-shadow:
-    0 0 10px rgba(0, 212, 255, 0.5),
-    0 0 20px rgba(0, 212, 255, 0.3),
-    0 0 40px rgba(168, 85, 247, 0.2);
+.btn-primary:hover {
+  box-shadow: 0 4px 20px hsla(35, 90%, 55%, 0.3);
 }
 
-.neon-purple {
-  box-shadow:
-    0 0 10px rgba(168, 85, 247, 0.4),
-    0 0 20px rgba(168, 85, 247, 0.2),
-    0 0 40px rgba(168, 85, 247, 0.1);
+/* Ghost button with personality */
+.btn-ghost {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-200;
+  @apply bg-transparent border border-border text-foreground;
+  @apply hover:bg-muted hover:border-primary/30;
 }
 
-.neon-gold {
-  box-shadow:
-    0 0 10px rgba(212, 175, 55, 0.4),
-    0 0 20px rgba(212, 175, 55, 0.2),
-    0 0 40px rgba(212, 175, 55, 0.1);
+/* The special button - for important actions */
+.btn-special {
+  @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 relative overflow-hidden;
+  background: linear-gradient(135deg, hsl(35, 90%, 50%) 0%, hsl(25, 85%, 45%) 100%);
+  @apply text-white;
+  @apply hover:shadow-lg active:scale-[0.98];
+}
+
+.btn-special:hover {
+  box-shadow: 0 8px 30px hsla(35, 90%, 55%, 0.35);
 }
 
 /* ========================================
-   GRADIENT TEXT - Enhanced with purple/gold
+   SCORE DISPLAY - Clean and readable
    ======================================== */
 
-.gradient-text {
-  background: linear-gradient(135deg, #00d4ff 0%, #a855f7 50%, #00d4ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.score-badge {
+  @apply inline-flex items-center justify-center;
+  @apply text-3xl font-bold tabular-nums;
+  @apply w-16 h-16 rounded-xl;
 }
 
-.gradient-text-premium {
-  background: linear-gradient(135deg, #00d4ff 0%, #a855f7 35%, #d4af37 65%, #a855f7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% 200%;
-  animation: gradient-flow 8s ease infinite;
+.score-badge-high {
+  @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/20;
 }
 
-.gradient-text-gold {
-  background: linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.score-badge-medium {
+  @apply bg-amber-500/15 text-amber-400 border border-amber-500/20;
 }
 
-@keyframes gradient-flow {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.score-badge-low {
+  @apply bg-rose-500/15 text-rose-400 border border-rose-500/20;
 }
 
 /* ========================================
-   ANIMATIONS - Refined
+   DATA DISPLAY - For the numbers people
    ======================================== */
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 20px rgba(168, 85, 247, 0.3),
-      0 0 40px rgba(0, 212, 255, 0.2),
-      0 0 60px rgba(168, 85, 247, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 0 30px rgba(168, 85, 247, 0.5),
-      0 0 60px rgba(0, 212, 255, 0.3),
-      0 0 90px rgba(168, 85, 247, 0.2);
-  }
+.metric {
+  @apply flex flex-col gap-1;
 }
 
-.pulse-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
+.metric-label {
+  @apply text-xs uppercase tracking-wider text-muted-foreground;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(1deg); }
+.metric-value {
+  @apply text-xl font-semibold tabular-nums;
 }
 
-.float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
-}
-
-.fade-in-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
-.fade-in-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
-.fade-in-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
-.fade-in-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
-
-/* Subtle rotation for background elements */
-@keyframes slow-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.slow-rotate {
-  animation: slow-rotate 120s linear infinite;
+.metric-value-lg {
+  @apply text-2xl font-bold tabular-nums;
 }
 
 /* ========================================
-   GLOWING ORBS - Enhanced
+   SUBTLE ANIMATIONS - Purposeful, not gratuitous
    ======================================== */
 
-.glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.25;
-  pointer-events: none;
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.glow-orb-cyan {
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.8) 0%, transparent 70%);
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
 }
 
-.glow-orb-purple {
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, transparent 70%);
+/* Subtle pulse for live indicators */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-.glow-orb-gold {
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.6) 0%, transparent 70%);
-}
-
-/* ========================================
-   BUTTONS - Enhanced with better touch targets
-   ======================================== */
-
-/* Ensure minimum 44px touch targets on mobile */
-@media (max-width: 768px) {
-  button,
-  a[role="button"],
-  .btn,
-  [class*="Button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* Premium button style */
-.btn-premium {
-  @apply relative overflow-hidden font-semibold px-8 py-4 rounded-lg text-lg;
-  background: linear-gradient(135deg, hsl(195, 100%, 45%) 0%, hsl(270, 70%, 50%) 100%);
-  color: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
-}
-
-.btn-premium:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 25px rgba(168, 85, 247, 0.4),
-    0 0 40px rgba(0, 212, 255, 0.2);
-}
-
-.btn-premium::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
-.btn-premium:hover::before {
-  transform: translateX(100%);
-}
-
-/* Card hover effect - enhanced */
-.card-hover {
-  @apply transition-all duration-300;
-}
-
-.card-hover:hover {
-  @apply border-primary/50;
-  box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.1),
-    0 0 40px rgba(168, 85, 247, 0.05);
-  transform: translateY(-2px);
+.pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 /* ========================================
-   CUSTOM SCROLLBAR
+   CUSTOM SCROLLBAR - Minimal
    ======================================== */
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(220, 15%, 13%);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(270, 50%, 35%) 0%, hsl(220, 30%, 28%) 100%);
-  border-radius: 5px;
-  border: 2px solid hsl(220, 15%, 13%);
+  @apply bg-border rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, hsl(270, 60%, 45%) 0%, hsl(220, 40%, 38%) 100%);
-}
-
-.light ::-webkit-scrollbar-track {
-  background: hsl(0, 0%, 95%);
-}
-
-.light ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(220, 15%, 70%) 0%, hsl(220, 15%, 75%) 100%);
-  border: 2px solid hsl(0, 0%, 95%);
-}
-
-.light ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, hsl(220, 15%, 60%) 0%, hsl(220, 15%, 65%) 100%);
+  @apply bg-muted-foreground/30;
 }
 
 /* ========================================
-   INDICATOR COLORS (keeping existing)
-   ======================================== */
-
-/* Risk level indicators */
-.risk-low { @apply text-green-400; }
-.risk-medium { @apply text-yellow-400; }
-.risk-high { @apply text-orange-400; }
-.risk-critical { @apply text-red-400; }
-
-/* Strategy badges - enhanced */
-.strategy-csp {
-  @apply bg-blue-500/20 text-blue-400 border-blue-500/30;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
-}
-
-.strategy-cc {
-  @apply bg-green-500/20 text-green-400 border-green-500/30;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);
-}
-
-.strategy-pcs {
-  @apply bg-purple-500/20 text-purple-400 border-purple-500/30;
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
-}
-
-.strategy-ccs {
-  @apply bg-orange-500/20 text-orange-400 border-orange-500/30;
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.1);
-}
-
-/* Trend indicators */
-.trend-up { @apply text-green-400; }
-.trend-down { @apply text-red-400; }
-.trend-neutral { @apply text-yellow-400; }
-
-/* Volatility indicators */
-.vol-low { @apply text-green-400; }
-.vol-normal { @apply text-blue-400; }
-.vol-elevated { @apply text-yellow-400; }
-.vol-high { @apply text-orange-400; }
-.vol-panic { @apply text-red-400; }
-
-/* Score gauge colors */
-.score-excellent { @apply text-green-400; }
-.score-good { @apply text-blue-400; }
-.score-fair { @apply text-yellow-400; }
-.score-poor { @apply text-red-400; }
-
-/* ========================================
-   LOADING & SHIMMER
-   ======================================== */
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(220, 15%, 13%) 25%,
-    hsl(270, 20%, 18%) 50%,
-    hsl(220, 15%, 13%) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-.light .shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(220, 15%, 92%) 25%,
-    hsl(220, 20%, 88%) 50%,
-    hsl(220, 15%, 92%) 75%
-  );
-}
-
-/* ========================================
-   DATA TABLES
+   TABLES - Clean data presentation
    ======================================== */
 
 .data-table {
-  @apply w-full;
+  @apply w-full text-sm;
 }
 
 .data-table th {
-  @apply text-left text-sm uppercase text-muted-foreground font-medium py-4 px-4;
-  background: linear-gradient(180deg, hsla(250, 20%, 12%, 0.5) 0%, transparent 100%);
+  @apply text-left text-xs uppercase tracking-wider text-muted-foreground font-medium py-3 px-4;
 }
 
 .data-table td {
   @apply py-4 px-4 border-t border-border;
 }
 
-.data-table tr {
-  @apply transition-colors duration-200;
-}
-
-.data-table tr:hover {
-  background: linear-gradient(90deg,
-    hsla(270, 50%, 20%, 0.1) 0%,
-    hsla(195, 50%, 20%, 0.1) 100%);
+.data-table tbody tr {
+  @apply transition-colors hover:bg-muted/50;
 }
 
 /* ========================================
-   TOOLTIP STYLES
+   EASTER EGGS & PERSONALITY
    ======================================== */
 
-.tooltip-content {
-  @apply glass-panel px-4 py-3 text-sm max-w-xs;
-  border-color: rgba(168, 85, 247, 0.2);
+/* The logo text has a subtle warm shimmer on hover */
+.logo-text {
+  @apply transition-all duration-500;
 }
 
-/* ========================================
-   PROFESSIONAL/ACCESSIBLE STYLES
-   ======================================== */
-
-.pro-card {
-  @apply rounded-xl p-6 sm:p-8 transition-all duration-300;
-  background: linear-gradient(145deg, hsl(220, 15%, 9%), hsl(250, 15%, 7%));
-  border: 1px solid hsla(220, 15%, 22%, 0.6);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+.logo-text:hover {
+  text-shadow: 0 0 20px hsla(35, 90%, 55%, 0.5);
 }
 
-.pro-card:hover {
-  border-color: hsla(270, 60%, 50%, 0.3);
-  box-shadow:
-    0 15px 50px rgba(0, 0, 0, 0.4),
-    0 0 30px rgba(168, 85, 247, 0.05);
+/* Empty states have character */
+.empty-state {
+  @apply text-center py-12 px-6;
 }
 
-.pro-heading {
-  @apply text-foreground font-bold tracking-tight;
+.empty-state-icon {
+  @apply mx-auto mb-4 text-muted-foreground/50;
+  @apply transition-transform duration-500 hover:rotate-12;
 }
 
-.pro-text {
-  @apply text-muted-foreground leading-relaxed;
+/* "Live" indicator - subtle but noticeable */
+.live-indicator {
+  @apply inline-flex items-center gap-2 text-sm;
 }
 
-.pro-text-large {
-  @apply text-lg sm:text-xl text-muted-foreground leading-relaxed;
+.live-indicator::before {
+  content: '';
+  @apply w-2 h-2 rounded-full bg-emerald-400;
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
-.pro-button {
-  @apply font-semibold px-8 py-4 rounded-lg text-lg transition-all duration-300;
-  background: linear-gradient(135deg, hsl(195, 100%, 45%) 0%, hsl(270, 70%, 50%) 100%);
-  color: white;
-}
+/* Konami code? Easter egg pending... */
 
-.pro-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.3);
-}
-
-.pro-button-outline {
-  @apply border-2 font-semibold px-8 py-4 rounded-lg text-lg transition-all duration-300;
-  border-color: hsl(270, 60%, 50%);
-  color: hsl(270, 60%, 60%);
-}
-
-.pro-button-outline:hover {
-  background: hsla(270, 60%, 50%, 0.1);
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
-}
-
-.pro-section {
-  @apply py-16 sm:py-24;
-}
-
-.pro-section-alt {
-  @apply py-16 sm:py-24;
-  background: linear-gradient(180deg,
-    hsla(250, 20%, 6%, 0.5) 0%,
-    hsla(220, 20%, 5%, 0.3) 100%);
-}
-
-.pro-feature-list li {
-  @apply flex items-start gap-4 py-3;
-}
-
-.pro-feature-list li svg {
-  @apply h-6 w-6 text-green-500 flex-shrink-0 mt-1;
-}
-
-.pro-feature-list li span {
-  @apply text-lg;
-}
-
-/* ========================================
-   DIVIDERS & DECORATIVE ELEMENTS
-   ======================================== */
-
-.divider-glow {
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(168, 85, 247, 0.5) 20%,
-    rgba(0, 212, 255, 0.5) 50%,
-    rgba(168, 85, 247, 0.5) 80%,
-    transparent 100%);
-}
-
-.corner-accent {
+/* Score badges have a subtle "level up" animation on high scores */
+.score-badge-high {
   position: relative;
 }
 
-.corner-accent::before,
-.corner-accent::after {
+.score-badge-high::after {
   content: '';
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border: 2px solid rgba(168, 85, 247, 0.3);
+  @apply absolute inset-0 rounded-xl;
+  background: linear-gradient(45deg, transparent 40%, hsla(142, 76%, 36%, 0.3) 50%, transparent 60%);
+  background-size: 200% 200%;
+  animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
-.corner-accent::before {
-  top: -5px;
-  left: -5px;
-  border-right: none;
-  border-bottom: none;
+@keyframes shimmer {
+  0% { background-position: 200% 200%; }
+  100% { background-position: -200% -200%; }
 }
 
-.corner-accent::after {
-  bottom: -5px;
-  right: -5px;
-  border-left: none;
-  border-top: none;
+/* Regime badge - understated */
+.regime-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium;
+  @apply bg-muted text-muted-foreground;
 }
 
 /* ========================================
-   MOBILE RESPONSIVE ENHANCEMENTS
+   RESPONSIVE UTILITIES
    ======================================== */
 
 @media (max-width: 768px) {
-  .glass-panel {
-    @apply backdrop-blur-sm;
-  }
-
-  /* Ensure readable text on mobile */
   html {
-    font-size: 16px;
+    font-size: 15px;
   }
 
-  /* Better spacing on mobile */
-  .pro-section,
-  .pro-section-alt {
-    @apply py-12;
-  }
-
-  /* Stack grids on mobile */
-  .grid-cols-4 {
-    @apply grid-cols-2;
+  .hide-mobile {
+    @apply hidden;
   }
 }
 
 @media (max-width: 480px) {
-  .grid-cols-2 {
-    @apply grid-cols-1;
-  }
-
   html {
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
 /* ========================================
-   LEARNING MODE HIGHLIGHT
+   FORM ELEMENTS - Clean and functional
    ======================================== */
 
-.learning-highlight {
-  @apply relative;
+.input-clean {
+  @apply w-full px-4 py-3 rounded-lg;
+  @apply bg-input border border-border;
+  @apply text-foreground placeholder:text-muted-foreground;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+  @apply transition-all duration-200;
 }
 
-.learning-highlight::after {
-  content: '';
-  @apply absolute -inset-1 border-2 border-dashed rounded-lg pointer-events-none;
-  border-color: rgba(168, 85, 247, 0.4);
+/* ========================================
+   TOOLTIPS
+   ======================================== */
+
+.tooltip {
+  @apply px-3 py-2 text-sm rounded-lg;
+  @apply bg-card border border-border shadow-lg;
+}
+
+/* ========================================
+   DIVIDERS
+   ======================================== */
+
+.divider {
+  @apply h-px bg-border;
+}
+
+.divider-warm {
+  @apply h-px;
+  background: linear-gradient(90deg, transparent, hsl(35, 90%, 55%, 0.3), transparent);
+}
+
+/* ========================================
+   LAYOUT HELPERS
+   ======================================== */
+
+.content-grid {
+  @apply grid gap-6;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+/* Card grid - breathable */
+.trade-grid {
+  @apply grid gap-5;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (min-width: 1280px) {
+  .trade-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card entrance animation - staggered for delight */
+.trade-grid > * {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.trade-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.trade-grid > *:nth-child(2) { animation-delay: 0.1s; }
+.trade-grid > *:nth-child(3) { animation-delay: 0.15s; }
+
+/* Profit/loss text - subtle glow on hover for that dopamine hit */
+.text-profit:hover {
+  text-shadow: 0 0 8px hsla(142, 76%, 36%, 0.5);
+}
+
+.text-loss:hover {
+  text-shadow: 0 0 8px hsla(0, 84%, 60%, 0.5);
+}
+
+/* Primary button - warm glow */
+.btn-primary:hover {
+  box-shadow: 0 4px 20px hsla(35, 90%, 55%, 0.3);
 }

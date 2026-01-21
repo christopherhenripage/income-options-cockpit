@@ -1,18 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, GraduationCap, RefreshCw, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { GraduationCap, RefreshCw, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useLearning } from '@/contexts/learning-context';
 
@@ -30,24 +28,18 @@ interface HeaderProps {
 }
 
 function getTrendIcon(trend: string) {
-  if (trend.includes('uptrend')) return <TrendingUp className="h-3 w-3 text-green-400" />;
-  if (trend.includes('downtrend')) return <TrendingDown className="h-3 w-3 text-red-400" />;
-  return <Activity className="h-3 w-3 text-yellow-400" />;
+  if (trend.includes('uptrend')) return <TrendingUp className="h-3.5 w-3.5" />;
+  if (trend.includes('downtrend')) return <TrendingDown className="h-3.5 w-3.5" />;
+  return <Minus className="h-3.5 w-3.5" />;
 }
 
-function getTrendColor(trend: string) {
-  if (trend.includes('uptrend')) return 'text-green-400';
-  if (trend.includes('downtrend')) return 'text-red-400';
-  return 'text-yellow-400';
-}
-
-function getVolColor(vol: string) {
-  if (['elevated', 'high', 'panic'].includes(vol)) return 'text-orange-400';
-  if (['low', 'compressed'].includes(vol)) return 'text-blue-400';
+function getTrendClass(trend: string) {
+  if (trend.includes('uptrend')) return 'text-profit';
+  if (trend.includes('downtrend')) return 'text-loss';
   return 'text-muted-foreground';
 }
 
-export function Header({ title, subtitle, regime }: HeaderProps) {
+export function Header({ title, regime }: HeaderProps) {
   const { explainMode, setExplainMode } = useLearning();
   const [isRecomputing, setIsRecomputing] = useState(false);
 
@@ -64,82 +56,81 @@ export function Header({ title, subtitle, regime }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border px-6 bg-card/50 backdrop-blur-sm">
+    <header className="flex h-14 items-center justify-between border-b border-border px-6 bg-card/80 backdrop-blur-sm">
       <div className="flex items-center gap-6">
-        {title && <h1 className="text-lg font-semibold">{title}</h1>}
+        {/* Logo / Title with subtle personality */}
+        <h1 className="logo-text text-lg font-semibold tracking-tight">
+          {title || 'Options Cockpit'}
+        </h1>
 
-        {/* Compact Market Regime Bar */}
+        {/* Market Regime - Clean badges */}
         {regime && (
-          <div className="hidden md:flex items-center gap-3 text-sm">
-            <div className="flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-2">
+            <div className={cn(
+              'regime-badge',
+              getTrendClass(regime.trend)
+            )}>
               {getTrendIcon(regime.trend)}
-              <span className={cn("font-medium", getTrendColor(regime.trend))}>
-                {regime.trend.replace('_', ' ')}
-              </span>
+              <span className="capitalize">{regime.trend.replace('_', ' ')}</span>
             </div>
-            <span className="text-muted-foreground">•</span>
-            <span className={cn("font-medium", getVolColor(regime.volatility))}>
+            <div className="regime-badge">
               {regime.volatility} vol
-            </span>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground">
-              {regime.riskOnOff.replace('_', ' ')}
-            </span>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Explain Mode Toggle - Connected to Context */}
+      <div className="flex items-center gap-3">
+        {/* Explain Mode Toggle */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <GraduationCap className={cn(
-                  'h-4 w-4 transition-colors',
-                  explainMode ? 'text-primary' : 'text-muted-foreground'
-                )} />
+              <button
+                onClick={() => setExplainMode(!explainMode)}
+                className={cn(
+                  'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all',
+                  explainMode
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span className="hidden sm:inline">Learn</span>
                 <Switch
-                  id="explain-mode"
                   checked={explainMode}
                   onCheckedChange={setExplainMode}
+                  className="scale-75"
                 />
-                <Label htmlFor="explain-mode" className="text-sm cursor-pointer hidden sm:inline">
-                  Explain
-                </Label>
-              </div>
+              </button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>{explainMode ? 'Hide' : 'Show'} educational explanations and tooltips</p>
+            <TooltipContent side="bottom">
+              <p>{explainMode ? 'Hide' : 'Show'} educational content</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
-        {/* Status Badge */}
-        <Badge variant="outline" className="border-green-500/50 text-green-400 hidden sm:flex">
-          Paper Mode
-        </Badge>
+        <div className="h-5 w-px bg-border" />
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handleRecompute}
                   disabled={isRecomputing}
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <RefreshCw className={cn(
                     'h-4 w-4',
                     isRecomputing && 'animate-spin'
                   )} />
-                  <span className="hidden sm:inline ml-2">Refresh</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Regenerate trade candidates with latest data</p>
+              <TooltipContent side="bottom">
+                <p>Refresh market data</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
