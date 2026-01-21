@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
+import { PositionTracker } from '@/components/dashboard/position-tracker';
+import { PortfolioSummary } from '@/components/dashboard/portfolio-summary';
+import { TradeReview } from '@/components/dashboard/trade-review';
 import { TopPick } from '@/components/dashboard/top-pick';
 import { TradeGrid } from '@/components/dashboard/trade-grid';
-import { PaperTradingWidget } from '@/components/dashboard/paper-trading-widget';
 import { WelcomeModal } from '@/components/dashboard/welcome-modal';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { usePaperTrading } from '@/contexts/paper-trading-context';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface OptionLeg {
   action: 'buy' | 'sell';
@@ -52,8 +56,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [showOpportunities, setShowOpportunities] = useState(true);
 
-  const { addTrade, trackedIds } = usePaperTrading();
+  const { addTrade, trackedIds, trades } = usePaperTrading();
+  const hasOpenPositions = trades.some((t) => t.status === 'open');
 
   const fetchData = async () => {
     setLoading(true);
@@ -101,8 +107,9 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col h-full">
       <WelcomeModal />
+      <TradeReview regime={data?.regime} />
       <Header
-        title="Options Cockpit"
+        title="Position Co-Pilot"
         regime={data?.regime}
       />
 
@@ -142,30 +149,59 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Main Content - Clean layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Column */}
-          <div className="lg:col-span-3 space-y-6">
-            <TopPick
-              candidate={data?.candidates?.[0]}
-              regime={data?.regime}
-              loading={loading}
-              onPaperTrade={handlePaperTrade}
-              isTracked={data?.candidates?.[0] ? trackedIds.has(data.candidates[0].id) : false}
-            />
+        {/* Portfolio Summary - Quick glance at exposure */}
+        <PortfolioSummary />
 
-            <TradeGrid
-              candidates={data?.candidates || []}
-              loading={loading}
-              trackedIds={trackedIds}
-              onPaperTrade={handlePaperTrade}
-            />
-          </div>
+        {/* Position Co-Pilot - PRIMARY FOCUS */}
+        <PositionTracker regime={data?.regime} />
 
-          {/* Sidebar */}
-          <div className="space-y-4">
-            <PaperTradingWidget />
-          </div>
+        {/* Opportunities Section - SECONDARY */}
+        <div className="mt-6">
+          <button
+            onClick={() => setShowOpportunities(!showOpportunities)}
+            className="w-full flex items-center justify-between p-4 bg-card/50 hover:bg-card border border-border rounded-xl transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-muted">
+                <Sparkles className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium">New Opportunities</h3>
+                <p className="text-sm text-muted-foreground">
+                  {loading ? 'Scanning...' : `${data?.candidateCount || 0} trades match your criteria`}
+                </p>
+              </div>
+            </div>
+            <div className={cn(
+              'p-2 rounded-lg transition-colors',
+              showOpportunities ? 'bg-primary/10' : 'bg-muted group-hover:bg-muted/80'
+            )}>
+              {showOpportunities ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </div>
+          </button>
+
+          {showOpportunities && (
+            <div className="mt-4 space-y-6 animate-fade-in">
+              <TopPick
+                candidate={data?.candidates?.[0]}
+                regime={data?.regime}
+                loading={loading}
+                onPaperTrade={handlePaperTrade}
+                isTracked={data?.candidates?.[0] ? trackedIds.has(data.candidates[0].id) : false}
+              />
+
+              <TradeGrid
+                candidates={data?.candidates || []}
+                loading={loading}
+                trackedIds={trackedIds}
+                onPaperTrade={handlePaperTrade}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

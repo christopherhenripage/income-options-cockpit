@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
-  Sparkles,
+  Target,
   BookOpen,
-  Eye,
-  TrendingUp,
+  Bell,
+  Shield,
   ArrowRight,
 } from 'lucide-react';
 
@@ -41,36 +41,36 @@ export function WelcomeModal() {
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary" />
+              <Target className="h-5 w-5 text-primary" />
             </div>
-            <DialogTitle className="text-xl">Welcome to Options Cockpit</DialogTitle>
+            <DialogTitle className="text-xl">Welcome to Position Co-Pilot</DialogTitle>
           </div>
           <DialogDescription className="text-left">
-            Your co-pilot for income-focused options trading.
+            Your personal assistant for managing options positions with discipline.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="flex items-start gap-3">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="h-4 w-4 text-primary" />
+              <Shield className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-sm">Smart Trade Recommendations</p>
+              <p className="font-medium text-sm">Personal Exit Rules</p>
               <p className="text-sm text-muted-foreground">
-                We analyze market conditions and surface the best income opportunities.
+                Set your profit targets and stop losses. We'll alert you when it's time to act.
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Eye className="h-4 w-4 text-primary" />
+              <Bell className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-sm">Paper Trading Built-In</p>
+              <p className="font-medium text-sm">Smart Alerts</p>
               <p className="text-sm text-muted-foreground">
-                Track recommendations without risking real money. Build confidence first.
+                Get notified when your rules trigger or market conditions change against your positions.
               </p>
             </div>
           </div>
@@ -80,9 +80,9 @@ export function WelcomeModal() {
               <BookOpen className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-sm">Learn Mode Enabled</p>
+              <p className="font-medium text-sm">Trade Reviews</p>
               <p className="text-sm text-muted-foreground">
-                Educational content is on by default. Toggle it off in the header when you're ready.
+                Learn from every trade with AI-powered reviews that help you improve.
               </p>
             </div>
           </div>

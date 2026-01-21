@@ -2,7 +2,21 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
-interface PaperTrade {
+export interface PositionRules {
+  profitTargetPercent: number;  // e.g., 50 means close at 50% profit
+  stopLossPercent: number;      // e.g., 200 means close at 200% of credit received (2x loss)
+  dteExit: number;              // Exit when DTE reaches this value (e.g., 21 days)
+}
+
+export interface PositionAlert {
+  id: string;
+  type: 'profit_target' | 'stop_loss' | 'dte_warning' | 'expired' | 'regime_change';
+  message: string;
+  createdAt: string;
+  dismissed: boolean;
+}
+
+export interface PaperTrade {
   id: string;
   tradeId: string;
   symbol: string;
@@ -17,6 +31,10 @@ interface PaperTrade {
   closeDate?: string;
   closeValue?: number;
   notes?: string;
+  // New fields for Position Co-Pilot
+  rules?: PositionRules;
+  currentValue?: number;  // Simulated current value for demo
+  alerts?: PositionAlert[];
 }
 
 interface PaperTradingStats {
@@ -37,7 +55,20 @@ interface PaperTradingContextType {
   closeTrade: (id: string, status: 'won' | 'lost', closeValue?: number) => void;
   removeTrade: (id: string) => void;
   isTracked: (tradeId: string) => boolean;
+  // New functions for Position Co-Pilot
+  updateRules: (id: string, rules: PositionRules) => void;
+  updateCurrentValue: (id: string, value: number) => void;
+  addAlert: (tradeId: string, alert: Omit<PositionAlert, 'id' | 'createdAt' | 'dismissed'>) => void;
+  dismissAlert: (tradeId: string, alertId: string) => void;
+  getActiveAlerts: () => { trade: PaperTrade; alert: PositionAlert }[];
 }
+
+// Default rules for new positions
+const DEFAULT_RULES: PositionRules = {
+  profitTargetPercent: 50,  // Take profit at 50%
+  stopLossPercent: 200,     // Stop loss at 2x credit
+  dteExit: 21,              // Exit at 21 DTE
+};
 
 const PaperTradingContext = createContext<PaperTradingContextType | undefined>(undefined);
 
@@ -99,11 +130,83 @@ export function PaperTradingProvider({ children }: { children: ReactNode }) {
         id: `paper-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         entryDate: new Date().toISOString(),
         status: 'open',
+        rules: DEFAULT_RULES,
+        currentValue: trade.entryCredit, // Start at entry credit
+        alerts: [],
       };
       setTrades((prev) => [...prev, newTrade]);
     },
     []
   );
+
+  const updateRules = useCallback(
+    (id: string, rules: PositionRules) => {
+      setTrades((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, rules } : t))
+      );
+    },
+    []
+  );
+
+  const updateCurrentValue = useCallback(
+    (id: string, value: number) => {
+      setTrades((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, currentValue: value } : t))
+      );
+    },
+    []
+  );
+
+  const addAlert = useCallback(
+    (tradeId: string, alert: Omit<PositionAlert, 'id' | 'createdAt' | 'dismissed'>) => {
+      const newAlert: PositionAlert = {
+        ...alert,
+        id: `alert-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        createdAt: new Date().toISOString(),
+        dismissed: false,
+      };
+      setTrades((prev) =>
+        prev.map((t) =>
+          t.id === tradeId
+            ? { ...t, alerts: [...(t.alerts || []), newAlert] }
+            : t
+        )
+      );
+    },
+    []
+  );
+
+  const dismissAlert = useCallback(
+    (tradeId: string, alertId: string) => {
+      setTrades((prev) =>
+        prev.map((t) =>
+          t.id === tradeId
+            ? {
+                ...t,
+                alerts: t.alerts?.map((a) =>
+                  a.id === alertId ? { ...a, dismissed: true } : a
+                ),
+              }
+            : t
+        )
+      );
+    },
+    []
+  );
+
+  const getActiveAlerts = useCallback(() => {
+    const result: { trade: PaperTrade; alert: PositionAlert }[] = [];
+    trades.forEach((trade) => {
+      trade.alerts?.forEach((alert) => {
+        if (!alert.dismissed) {
+          result.push({ trade, alert });
+        }
+      });
+    });
+    return result.sort(
+      (a, b) => new Date(b.alert.createdAt).getTime() - new Date(a.alert.createdAt).getTime()
+    );
+  }, [trades]);
 
   const closeTrade = useCallback(
     (id: string, status: 'won' | 'lost', closeValue?: number) => {
@@ -144,6 +247,11 @@ export function PaperTradingProvider({ children }: { children: ReactNode }) {
         closeTrade,
         removeTrade,
         isTracked,
+        updateRules,
+        updateCurrentValue,
+        addAlert,
+        dismissAlert,
+        getActiveAlerts,
       }}
     >
       {children}
