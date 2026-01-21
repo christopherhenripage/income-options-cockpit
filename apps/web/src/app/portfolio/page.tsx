@@ -1,3 +1,5 @@
+'use client';
+
 import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +14,10 @@ import {
   BookOpen,
   Plus,
   Award,
+  FlaskConical,
 } from 'lucide-react';
-import { cn, formatCurrency, formatPercent, formatDate, getStrategyLabel, getStrategyClass } from '@/lib/utils';
+import { cn, formatCurrency, getStrategyLabel, getStrategyClass } from '@/lib/utils';
+import { usePaperTrading } from '@/contexts/paper-trading-context';
 
 /**
  * Calculate estimated unrealized P&L using time decay approximation
@@ -108,17 +112,43 @@ const mockBadges = [
 ];
 
 export default function PortfolioPage() {
-  const totalOpenPnL = mockPositions.reduce((sum, p) => sum + p.currentPnL, 0);
-  const totalRealizedPnL = mockClosedPositions.reduce((sum, p) => sum + p.realizedPnL, 0);
+  const { trades, stats } = usePaperTrading();
+
+  // Use real paper trades from context
+  const openTrades = trades.filter(t => t.status === 'open');
+  const closedTrades = trades.filter(t => t.status !== 'open');
+
+  // Calculate days remaining for trades
+  const getRemaining = (expirationDate: string) => {
+    const exp = new Date(expirationDate);
+    const now = new Date();
+    const diff = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(0, diff);
+  };
+
+  // Fall back to mock data if no paper trades exist
+  const hasRealTrades = trades.length > 0;
+  const totalOpenPnL = hasRealTrades ? 0 : mockPositions.reduce((sum, p) => sum + p.currentPnL, 0);
+  const totalRealizedPnL = hasRealTrades ? stats.totalPL : mockClosedPositions.reduce((sum, p) => sum + p.realizedPnL, 0);
 
   return (
     <div className="flex flex-col h-full">
       <Header
         title="Portfolio"
-        subtitle="Paper trading positions, journal, and discipline tracking"
       />
 
       <div className="flex-1 p-6 overflow-auto space-y-6">
+        {/* Demo Data Banner */}
+        {!hasRealTrades && (
+          <div className="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl">
+            <FlaskConical className="h-5 w-5 text-primary" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">Demo Data</p>
+              <p className="text-xs text-muted-foreground">Track trades from the Dashboard to see your real portfolio here</p>
+            </div>
+          </div>
+        )}
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
@@ -126,7 +156,7 @@ export default function PortfolioPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Open Positions</p>
-                  <p className="text-2xl font-bold">{mockPositions.length}</p>
+                  <p className="text-2xl font-bold">{hasRealTrades ? openTrades.length : mockPositions.length}</p>
                 </div>
                 <Briefcase className="h-8 w-8 text-primary opacity-50" />
               </div>
@@ -137,19 +167,18 @@ export default function PortfolioPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Open P/L</p>
+                  <p className="text-sm text-muted-foreground">Win Rate</p>
                   <p className={cn(
                     'text-2xl font-bold',
-                    totalOpenPnL >= 0 ? 'text-green-400' : 'text-red-400'
+                    hasRealTrades && stats.winRate >= 50 ? 'text-profit' : ''
                   )}>
-                    {totalOpenPnL >= 0 ? '+' : ''}{formatCurrency(totalOpenPnL)}
+                    {hasRealTrades && stats.closedTrades > 0
+                      ? `${stats.winRate.toFixed(0)}%`
+                      : '—'
+                    }
                   </p>
                 </div>
-                {totalOpenPnL >= 0 ? (
-                  <TrendingUp className="h-8 w-8 text-green-400 opacity-50" />
-                ) : (
-                  <TrendingDown className="h-8 w-8 text-red-400 opacity-50" />
-                )}
+                <TrendingUp className="h-8 w-8 text-profit opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -158,10 +187,10 @@ export default function PortfolioPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Realized P/L</p>
+                  <p className="text-sm text-muted-foreground">Total P/L</p>
                   <p className={cn(
                     'text-2xl font-bold',
-                    totalRealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'
+                    totalRealizedPnL >= 0 ? 'text-profit' : 'text-loss'
                   )}>
                     {totalRealizedPnL >= 0 ? '+' : ''}{formatCurrency(totalRealizedPnL)}
                   </p>
@@ -175,10 +204,10 @@ export default function PortfolioPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Badges Earned</p>
-                  <p className="text-2xl font-bold">{mockBadges.length}</p>
+                  <p className="text-sm text-muted-foreground">Total Trades</p>
+                  <p className="text-2xl font-bold">{hasRealTrades ? stats.totalTrades : mockBadges.length}</p>
                 </div>
-                <Award className="h-8 w-8 text-yellow-400 opacity-50" />
+                <Award className="h-8 w-8 text-primary opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -197,59 +226,105 @@ export default function PortfolioPage() {
           <TabsContent value="positions">
             <Card>
               <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {mockPositions.map((position) => (
-                    <div
-                      key={position.id}
-                      className="glass-panel p-4 rounded-lg"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold">{position.symbol}</span>
-                          <Badge
-                            variant="outline"
-                            className={getStrategyClass(position.strategyType)}
-                          >
-                            {getStrategyLabel(position.strategyType)}
-                          </Badge>
-                          <Badge variant="outline" className="text-green-400 border-green-500/50">
-                            Open
-                          </Badge>
+                {hasRealTrades && openTrades.length > 0 ? (
+                  <div className="space-y-4">
+                    {openTrades.map((trade) => (
+                      <div
+                        key={trade.id}
+                        className="bg-card border border-border p-4 rounded-xl"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold">{trade.symbol}</span>
+                            <Badge
+                              variant="outline"
+                              className={getStrategyClass(trade.strategyType)}
+                            >
+                              {getStrategyLabel(trade.strategyType)}
+                            </Badge>
+                          </div>
+                          <div className="text-xl font-bold text-profit">
+                            +{formatCurrency(trade.entryCredit)}
+                          </div>
                         </div>
-                        <div className={cn(
-                          'text-xl font-bold',
-                          position.currentPnL >= 0 ? 'text-green-400' : 'text-red-400'
-                        )}>
-                          {position.currentPnL >= 0 ? '+' : ''}{formatCurrency(position.currentPnL)}
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          {trade.strike && (
+                            <div>
+                              <span className="text-muted-foreground">Strike: </span>
+                              <span>${trade.strike}</span>
+                            </div>
+                          )}
+                          <div>
+                            <span className="text-muted-foreground">Premium: </span>
+                            <span className="text-profit">{formatCurrency(trade.entryCredit)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Max Loss: </span>
+                            <span className="text-loss">{formatCurrency(trade.maxLoss)}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-3">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {getRemaining(trade.expirationDate)} days to expiration
+                          </span>
                         </div>
                       </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Strike: </span>
-                          <span>${position.strike}</span>
+                    ))}
+                  </div>
+                ) : hasRealTrades ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Briefcase className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                    <p>No open positions</p>
+                    <p className="text-sm">Track a trade from the Dashboard to get started</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {mockPositions.map((position) => (
+                      <div
+                        key={position.id}
+                        className="bg-muted/20 border border-border p-4 rounded-xl opacity-75"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold">{position.symbol}</span>
+                            <Badge
+                              variant="outline"
+                              className={getStrategyClass(position.strategyType)}
+                            >
+                              {getStrategyLabel(position.strategyType)}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">Demo</Badge>
+                          </div>
+                          <div className={cn(
+                            'text-xl font-bold',
+                            position.currentPnL >= 0 ? 'text-profit' : 'text-loss'
+                          )}>
+                            {position.currentPnL >= 0 ? '+' : ''}{formatCurrency(position.currentPnL)}
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">Exp: </span>
-                          <span>{position.expiration}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Entry: </span>
-                          <span className="text-green-400">{formatCurrency(position.entryCredit)}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Current: </span>
-                          <span>{formatCurrency(position.currentValue)}</span>
+                        <div className="grid grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Strike: </span>
+                            <span>${position.strike}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Exp: </span>
+                            <span>{position.expiration}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Entry: </span>
+                            <span className="text-profit">{formatCurrency(position.entryCredit)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Current: </span>
+                            <span>{formatCurrency(position.currentValue)}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-3">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          {position.dte} days to expiration
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -258,55 +333,87 @@ export default function PortfolioPage() {
           <TabsContent value="history">
             <Card>
               <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {mockClosedPositions.map((position) => (
-                    <div
-                      key={position.id}
-                      className="glass-panel p-4 rounded-lg"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold">{position.symbol}</span>
-                          <Badge
-                            variant="outline"
-                            className={getStrategyClass(position.strategyType)}
-                          >
-                            {getStrategyLabel(position.strategyType)}
-                          </Badge>
-                          <Badge
-                            variant={position.result === 'profit' ? 'success' : 'danger'}
-                          >
-                            {position.result === 'profit' ? 'Profit' : 'Loss'}
-                          </Badge>
+                {hasRealTrades && closedTrades.length > 0 ? (
+                  <div className="space-y-4">
+                    {closedTrades.map((trade) => (
+                      <div
+                        key={trade.id}
+                        className={cn(
+                          'border p-4 rounded-xl',
+                          trade.status === 'won' ? 'bg-profit/5 border-emerald-500/20' : 'bg-loss/5 border-rose-500/20'
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold">{trade.symbol}</span>
+                            <Badge
+                              variant="outline"
+                              className={getStrategyClass(trade.strategyType)}
+                            >
+                              {getStrategyLabel(trade.strategyType)}
+                            </Badge>
+                            <Badge variant="outline" className={trade.status === 'won' ? 'text-profit border-emerald-500/30' : 'text-loss border-rose-500/30'}>
+                              {trade.status === 'won' ? 'Won' : 'Lost'}
+                            </Badge>
+                          </div>
+                          <div className={cn(
+                            'text-xl font-bold',
+                            trade.status === 'won' ? 'text-profit' : 'text-loss'
+                          )}>
+                            {trade.status === 'won'
+                              ? `+${formatCurrency(trade.entryCredit)}`
+                              : `-${formatCurrency(trade.closeValue || trade.maxLoss)}`
+                            }
+                          </div>
                         </div>
-                        <div className={cn(
-                          'text-xl font-bold',
-                          position.realizedPnL >= 0 ? 'text-green-400' : 'text-red-400'
-                        )}>
-                          {position.realizedPnL >= 0 ? '+' : ''}{formatCurrency(position.realizedPnL)}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Opened: </span>
-                          <span>{position.openedAt}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Closed: </span>
-                          <span>{position.closedAt}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Entry: </span>
-                          <span className="text-green-400">{formatCurrency(position.entryCredit)}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Exit: </span>
-                          <span className="text-red-400">{formatCurrency(position.exitDebit)}</span>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Entry Credit: </span>
+                            <span className="text-profit">{formatCurrency(trade.entryCredit)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Max Loss: </span>
+                            <span>{formatCurrency(trade.maxLoss)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : hasRealTrades ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <TrendingUp className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                    <p>No closed trades yet</p>
+                    <p className="text-sm">Mark trades as Won or Lost from the Dashboard</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {mockClosedPositions.map((position) => (
+                      <div
+                        key={position.id}
+                        className="bg-muted/20 border border-border p-4 rounded-xl opacity-75"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold">{position.symbol}</span>
+                            <Badge
+                              variant="outline"
+                              className={getStrategyClass(position.strategyType)}
+                            >
+                              {getStrategyLabel(position.strategyType)}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">Demo</Badge>
+                          </div>
+                          <div className={cn(
+                            'text-xl font-bold',
+                            position.realizedPnL >= 0 ? 'text-profit' : 'text-loss'
+                          )}>
+                            {position.realizedPnL >= 0 ? '+' : ''}{formatCurrency(position.realizedPnL)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

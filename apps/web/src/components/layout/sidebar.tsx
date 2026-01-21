@@ -9,13 +9,25 @@ import {
   ShieldAlert,
   Menu,
   X,
-  ExternalLink,
+  Briefcase,
+  BookOpen,
+  Newspaper,
+  Settings,
+  History,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
+  { name: 'Strategies', href: '/strategies', icon: BookOpen },
+  { name: 'Market Brief', href: '/narrative', icon: Newspaper },
+  { name: 'Run History', href: '/runs', icon: History },
+];
+
+const secondaryNav = [
+  { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Disclaimer', href: '/disclaimer', icon: ShieldAlert },
 ];
 
@@ -45,7 +57,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 flex flex-col">
         <div className="space-y-1">
           {navigation.map((item) => {
             const isActive =
@@ -70,13 +82,36 @@ export function Sidebar() {
             );
           })}
         </div>
+
+        {/* Secondary nav at bottom */}
+        <div className="mt-auto pt-4 border-t border-border space-y-1">
+          {secondaryNav.map((item) => {
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
+                  isActive
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.name}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Footer */}
       <div className="border-t border-border p-4">
-        <div className="text-xs text-muted-foreground text-center space-y-1">
-          <p>Paper Trading Mode</p>
-          <p>Real data, no risk</p>
+        <div className="text-xs text-muted-foreground text-center">
+          <p className="text-primary font-medium">Paper Trading</p>
         </div>
       </div>
     </>
@@ -117,21 +152,21 @@ export function Sidebar() {
       </div>
 
       {/* Desktop sidebar - Collapsed by default */}
-      <div className="hidden md:flex h-screen w-16 flex-col border-r border-border bg-card hover:w-48 transition-all duration-300 group overflow-hidden">
+      <div className="hidden md:flex h-screen w-16 flex-col border-r border-border bg-card hover:w-52 transition-all duration-300 group overflow-hidden">
         {/* Collapsed logo */}
-        <div className="flex h-16 items-center justify-center border-b border-border">
+        <div className="flex h-16 items-center justify-center border-b border-border px-3">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
               <TrendingUp className="h-5 w-5 text-primary" />
             </div>
-            <span className="text-lg font-bold neon-text opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Options Cockpit
+            <span className="logo-text text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Cockpit
             </span>
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-2 group-hover:p-4 transition-all">
+        <nav className="flex-1 p-2 group-hover:px-3 transition-all flex flex-col">
           <div className="space-y-1">
             {navigation.map((item) => {
               const isActive =
@@ -157,12 +192,37 @@ export function Sidebar() {
               );
             })}
           </div>
+
+          {/* Secondary nav */}
+          <div className="mt-auto pt-3 border-t border-border space-y-1">
+            {secondaryNav.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  <item.icon className="h-4 w-4 flex-shrink-0" />
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {item.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-border p-2 group-hover:p-4 transition-all">
-          <div className="text-xs text-muted-foreground text-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <p>Paper Trading</p>
+        <div className="border-t border-border p-2 group-hover:p-3 transition-all">
+          <div className="text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-primary font-medium">Paper Mode</span>
           </div>
         </div>
       </div>

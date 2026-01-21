@@ -261,6 +261,22 @@
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
+/* Easter egg float animation */
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.5);
+  }
+}
+
+.animate-float {
+  animation: float-up 2s ease-out forwards;
+}
+
 /* ========================================
    CUSTOM SCROLLBAR - Minimal
    ======================================== */

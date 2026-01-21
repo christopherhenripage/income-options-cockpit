@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import {
   Newspaper,
   TrendingUp,
-  TrendingDown,
   Activity,
   AlertTriangle,
   BarChart3,
   MessageSquare,
   Calendar,
+  FlaskConical,
 } from 'lucide-react';
 import { cn, formatDate, getTrendClass, getVolatilityClass } from '@/lib/utils';
 
@@ -54,6 +54,15 @@ export default function NarrativePage() {
       />
 
       <div className="flex-1 p-6 overflow-auto">
+        {/* Demo Data Banner */}
+        <div className="flex items-center gap-3 px-4 py-3 mb-6 bg-primary/10 border border-primary/20 rounded-xl">
+          <FlaskConical className="h-5 w-5 text-primary" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">Demo Data</p>
+            <p className="text-xs text-muted-foreground">This market brief uses sample data for demonstration purposes</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">

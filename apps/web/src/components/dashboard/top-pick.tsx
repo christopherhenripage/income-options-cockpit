@@ -1,14 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Trophy,
   TrendingUp,
-  Shield,
-  DollarSign,
-  Clock,
   Lightbulb,
   CheckCircle,
   Copy,
@@ -16,7 +12,6 @@ import {
   FileText,
   GraduationCap,
   ChevronDown,
-  ChevronUp,
   BookOpen,
   Play,
   Eye,
@@ -214,7 +209,38 @@ function getScoreBadgeClass(score: number): string {
 export function TopPick({ candidate, regime, loading, onPaperTrade, isTracked = false }: TopPickProps) {
   const [copied, setCopied] = useState(false);
   const [showLearning, setShowLearning] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [easterEggMessage, setEasterEggMessage] = useState('');
+  const clickCount = useRef(0);
+  const clickTimer = useRef<NodeJS.Timeout | null>(null);
   const { explainMode } = useLearning();
+
+  // Easter egg: Triple-click the score for a surprise
+  const handleScoreClick = useCallback(() => {
+    clickCount.current += 1;
+
+    if (clickTimer.current) {
+      clearTimeout(clickTimer.current);
+    }
+
+    if (clickCount.current === 3) {
+      // Trigger easter egg!
+      setShowConfetti(true);
+      setEasterEggMessage('🎉 You found the secret! May your trades be ever profitable.');
+      clickCount.current = 0;
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        setShowConfetti(false);
+        setEasterEggMessage('');
+      }, 3000);
+    } else {
+      // Reset after 500ms if not triple-clicked
+      clickTimer.current = setTimeout(() => {
+        clickCount.current = 0;
+      }, 500);
+    }
+  }, []);
 
   const handleCopy = async (text: string) => {
     try {
@@ -280,10 +306,42 @@ export function TopPick({ candidate, regime, loading, onPaperTrade, isTracked = 
             <p className="text-sm text-muted-foreground">{rationale.headline}</p>
           </div>
         </div>
-        <div className={cn('score-badge', getScoreBadgeClass(candidate.score))}>
+        <div
+          className={cn('score-badge cursor-pointer select-none transition-transform hover:scale-105', getScoreBadgeClass(candidate.score))}
+          onClick={handleScoreClick}
+          title="Try clicking me three times..."
+        >
           {candidate.score}
         </div>
       </div>
+
+      {/* Easter Egg Confetti & Message */}
+      {showConfetti && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+          <div className="absolute inset-0 animate-fade-in flex items-center justify-center">
+            <div className="text-4xl animate-bounce">🎊</div>
+          </div>
+          {/* Floating particles */}
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-2xl animate-float"
+              style={{
+                left: `${10 + (i * 7)}%`,
+                top: `${Math.random() * 30}%`,
+                animationDelay: `${i * 0.1}s`,
+              }}
+            >
+              {['✨', '🎉', '💰', '📈', '🚀', '⭐'][i % 6]}
+            </div>
+          ))}
+        </div>
+      )}
+      {easterEggMessage && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium animate-fade-in shadow-lg">
+          {easterEggMessage}
+        </div>
+      )}
 
       {/* Main Content - Two column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/header';
 import { TopPick } from '@/components/dashboard/top-pick';
 import { TradeGrid } from '@/components/dashboard/trade-grid';
 import { PaperTradingWidget } from '@/components/dashboard/paper-trading-widget';
+import { WelcomeModal } from '@/components/dashboard/welcome-modal';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { usePaperTrading } from '@/contexts/paper-trading-context';
 
@@ -99,6 +100,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col h-full">
+      <WelcomeModal />
       <Header
         title="Options Cockpit"
         regime={data?.regime}

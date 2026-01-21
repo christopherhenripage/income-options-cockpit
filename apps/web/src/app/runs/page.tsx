@@ -2,7 +2,7 @@ import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PlayCircle, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { PlayCircle, CheckCircle, XCircle, Clock, RefreshCw, FlaskConical } from 'lucide-react';
 import { cn, formatDateTime } from '@/lib/utils';
 
 // Mock run data
@@ -87,6 +87,15 @@ export default function RunsPage() {
       />
 
       <div className="flex-1 p-6 overflow-auto space-y-6">
+        {/* Demo Data Banner */}
+        <div className="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl">
+          <FlaskConical className="h-5 w-5 text-primary" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">Demo Data</p>
+            <p className="text-xs text-muted-foreground">Run history shows sample data. Dashboard uses live market data when available.</p>
+          </div>
+        </div>
+
         {/* Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
