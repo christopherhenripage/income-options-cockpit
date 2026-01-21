@@ -71,15 +71,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes
+  // Protected routes - only workspace/admin features require auth
+  // Dashboard, portfolio, strategies etc are public for demo mode
   const protectedPaths = [
-    '/trades',
-    '/portfolio',
-    '/strategies',
-    '/narrative',
-    '/settings',
-    '/runs',
-    '/broker',
+    '/workspace',
+    '/admin',
   ];
 
   const isProtectedPath = protectedPaths.some((path) =>

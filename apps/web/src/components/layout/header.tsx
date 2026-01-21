@@ -85,10 +85,9 @@ export function Header({ title, regime }: HeaderProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
-                onClick={() => setExplainMode(!explainMode)}
+              <div
                 className={cn(
-                  'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all',
+                  'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all cursor-pointer',
                   explainMode
                     ? 'bg-primary/15 text-primary'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -101,7 +100,7 @@ export function Header({ title, regime }: HeaderProps) {
                   onCheckedChange={setExplainMode}
                   className="scale-75"
                 />
-              </button>
+              </div>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p>{explainMode ? 'Hide' : 'Show'} educational content</p>
