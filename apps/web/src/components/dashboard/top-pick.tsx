@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,6 @@ import {
   Shield,
   DollarSign,
   Clock,
-  ArrowRight,
   Lightbulb,
   CheckCircle,
   Activity,
@@ -22,6 +20,8 @@ import {
   ChevronDown,
   ChevronUp,
   BookOpen,
+  Play,
+  Eye,
 } from 'lucide-react';
 import {
   cn,
@@ -70,6 +70,8 @@ interface TopPickProps {
   candidate?: TradeCandidate;
   regime?: Regime;
   loading?: boolean;
+  onPaperTrade?: (candidate: TradeCandidate) => void;
+  isTracked?: boolean;
 }
 
 // Generate rationale based on the trade and market regime
@@ -198,9 +200,9 @@ function formatAmeritradeOrder(candidate: TradeCandidate): {
   };
 }
 
-export function TopPick({ candidate, regime, loading }: TopPickProps) {
+export function TopPick({ candidate, regime, loading, onPaperTrade, isTracked = false }: TopPickProps) {
   const [copied, setCopied] = useState(false);
-  const [showLearning, setShowLearning] = useState(true);
+  const [showLearning, setShowLearning] = useState(false); // Collapsed by default
   const { explainMode } = useLearning();
 
   const handleCopy = async (text: string) => {
@@ -325,11 +327,20 @@ export function TopPick({ candidate, regime, loading }: TopPickProps) {
             </div>
 
             <div className="mt-4 pt-4 border-t border-border">
-              <Link href={`/trades/${candidate.id}`}>
-                <Button className="w-full btn-premium">
-                  View Full Analysis <ArrowRight className="ml-2 h-4 w-4" />
+              {isTracked ? (
+                <div className="flex items-center justify-center gap-2 text-primary py-2.5 bg-primary/10 rounded-lg">
+                  <Eye className="h-5 w-5" />
+                  <span className="font-medium">Tracking This Trade</span>
+                </div>
+              ) : (
+                <Button
+                  className="w-full btn-premium"
+                  onClick={() => onPaperTrade?.(candidate)}
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Paper Trade This
                 </Button>
-              </Link>
+              )}
             </div>
           </div>
 

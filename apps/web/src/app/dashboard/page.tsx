@@ -214,6 +214,8 @@ export default function DashboardPage() {
               candidate={data?.candidates?.[0]}
               regime={data?.regime}
               loading={loading}
+              onPaperTrade={handlePaperTrade}
+              isTracked={data?.candidates?.[0] ? trackedIds.has(data.candidates[0].id) : false}
             />
 
             {/* Trade Grid - 5 more opportunities */}
